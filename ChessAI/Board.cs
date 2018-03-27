@@ -33,22 +33,29 @@ namespace ChessAI
         }
         public void Print()
         {
-            for(int h = -1; h < 9; h++)
+            for(int h = 0; h < 9; h++)
             {
-                for(int w = -1; w < 9; w++)
+                for (int w = 0; w < 19; w++)
+                    Console.Write("-");
+                Console.WriteLine();
+                for(int w = -1; w < 8; w++)
                 {
-
-                    Console.ForegroundColor = ConsoleColor.White;
-                    if (w==-1 || w==8)
-                        Console.Write("|");
-                    else if(h==-1 || h==8)
-                        Console.Write("-");
+                    Console.Write("|");
+                    if (w == -1)
+                    {
+                        if (h < 8)
+                            Console.Write(8 - h);
+                        else
+                            Console.Write(" ");
+                    }
+                    else if (h == 8)
+                            Console.Write((Char)('a' + w));
                     else
                     {
                         bool white = (board[w, h] & (byte)Color.White) > 0;
                         Piece piece = (Piece)(board[w, h] - (white ? (byte)Color.White : 0));
                         if (!white)
-                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                            Console.ForegroundColor = ConsoleColor.Gray;
                         switch (piece)
                         {
                             case Piece.Bishop:
@@ -75,8 +82,18 @@ namespace ChessAI
                         }
 
                     }
+                    Console.ForegroundColor = ConsoleColor.White;
+                    if (w == 7)
+                        Console.Write("|");
                 }
                 Console.WriteLine();
+                if(h == 8)
+                {
+
+                    for (int w = 0; w < 19; w++)
+                        Console.Write("-");
+                    Console.WriteLine();
+                }
             }
         }
 
