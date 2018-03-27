@@ -9,11 +9,11 @@ namespace ChessAI
             Player A = new Human();
             Player B = new Human();
             Board board = new Board(A,B);
-            Color playerWon; //stalemate?
+            Win playerWon;
             do
             {
                 playerWon = board.Turn();
-            } while (playerWon == Color.None);
+            } while (playerWon == Win.None);
             Console.ReadKey();
         }
     }

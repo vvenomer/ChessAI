@@ -8,7 +8,9 @@ namespace ChessAI
     {
         public override String Decide(Board board)
         {
-            throw new NotImplementedException();
+            board.Print();
+            Console.WriteLine("Podaj swój ruch");
+            return Console.ReadLine();
         }
     }
 }

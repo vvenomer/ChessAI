@@ -15,8 +15,14 @@ namespace ChessAI
     };
     enum Color
     {
-        Black = 8,
-        White = 16,
-        None = 0
+        Black = 0,
+        White = 8
     };
+    enum Win
+    {
+        Black,
+        White,
+        None,
+        Stalemate
+    }
 }

@@ -85,9 +85,10 @@ namespace ChessAI
             //check if given move is valid
             return true; // temporary
         }
-        private bool Execute(String move)
+        private Win Execute(String move)
         {
             //save move and update board
+
             throw new NotImplementedException();
         }
         public int Evaluate()
@@ -95,24 +96,22 @@ namespace ChessAI
             //tells in how good position player is
             throw new NotImplementedException();
         }
-        public Color Turn()
+        public Win Turn()
         {
             String res;
             do
             {
                 res = whitePlayer.Decide(this);
             } while (!ValidMove(res));
-            bool win = Execute(res);
-            if (win)
-                return Color.White;
+            Win win = Execute(res);
+            if (win!=Win.None)
+                return win;
             do
             {
                 res = blackPlayer.Decide(this);
             } while (!ValidMove(res));
             win = Execute(res);
-            if (win)
-                return Color.Black;
-            return Color.None;
+            return win;
         }
     }
 }
