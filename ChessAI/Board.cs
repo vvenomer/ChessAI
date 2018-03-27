@@ -97,7 +97,7 @@ namespace ChessAI
             }
         }
 
-        public bool ValidMove(String move)
+        public bool IsValidMove(String move)
         {
             //check if given move is valid
             return true; // temporary
@@ -119,14 +119,14 @@ namespace ChessAI
             do
             {
                 res = whitePlayer.Decide(this);
-            } while (!ValidMove(res));
+            } while (!IsValidMove(res));
             Win win = Execute(res);
             if (win!=Win.None)
                 return win;
             do
             {
                 res = blackPlayer.Decide(this);
-            } while (!ValidMove(res));
+            } while (!IsValidMove(res));
             win = Execute(res);
             return win;
         }
