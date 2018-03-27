@@ -1,3 +1,4 @@
-ChessAI/obj
-ChessAI/bin
-
+ChessAI/obj/*
+ChessAI/bin/*
+*.sln
+*.csproj*
