@@ -6,6 +6,13 @@ namespace ChessAI
 {
     abstract class Player
     {
-        public abstract String Decide(Board board);
+        public Color color;
+
+        protected Player(Color color)
+        {
+            this.color = color;
+        }
+
+        public abstract short Decide(Board board);
     }
 }

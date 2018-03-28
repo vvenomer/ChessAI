@@ -6,7 +6,11 @@ namespace ChessAI
 {
     class NeuralNetwork : Player
     {
-        public override string Decide(Board board)
+        public NeuralNetwork(Color color) : base(color)
+        {
+        }
+
+        public override short Decide(Board board)
         {
             throw new NotImplementedException();
         }

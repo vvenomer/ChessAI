@@ -6,8 +6,8 @@ namespace ChessAI
     {
         static void Main(string[] args)
         {
-            Player A = new Human();
-            Player B = new Human();
+            Player A = new Human(Color.White);
+            Player B = new Human(Color.Black);
             Board board = new Board(A,B);
             Win playerWon;
             do

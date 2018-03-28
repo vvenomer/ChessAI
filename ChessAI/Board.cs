@@ -5,12 +5,12 @@ namespace ChessAI
     class Board
     {
         
-        byte [,]board;
+        public byte[,] board { get; private set; }
         Player whitePlayer, blackPlayer;
-        public Board(Player white, Player black)
+        public Board(Player a, Player b)
         {
-            whitePlayer = white;
-            blackPlayer = black;
+            whitePlayer = a.color == Color.White ? a : b;
+            blackPlayer = a.color != Color.White ? a : b;
             board = new byte[8,8];
             board[0, 0] = board[7, 0] = board[0, 7] = board[7, 7] = (byte)Piece.Rook;
             board[1, 0] = board[6, 0] = board[1, 7] = board[6, 7] = (byte)Piece.Knight;
@@ -36,7 +36,7 @@ namespace ChessAI
             for(int h = 0; h < 9; h++)
             {
                 for (int w = 0; w < 19; w++)
-                    Console.Write("-");
+                    Console.Write( (w%2==0) ? "+" : "-");
                 Console.WriteLine();
                 for(int w = -1; w < 8; w++)
                 {
@@ -49,7 +49,7 @@ namespace ChessAI
                             Console.Write(" ");
                     }
                     else if (h == 8)
-                            Console.Write((Char)('a' + w));
+                            Console.Write((char)('a' + w));
                     else
                     {
                         bool white = (board[w, h] & (byte)Color.White) > 0;
@@ -91,22 +91,28 @@ namespace ChessAI
                 {
 
                     for (int w = 0; w < 19; w++)
-                        Console.Write("-");
+                        Console.Write((w % 2 == 0) ? "+" : "-");
                     Console.WriteLine();
                 }
             }
         }
 
-        public bool IsValidMove(String move)
+        public bool IsValidMove(short move)
         {
             //check if given move is valid
             return true; // temporary
         }
-        private Win Execute(String move)
+        private Win Execute(short move)
         {
             //save move and update board
-
-            throw new NotImplementedException();
+            byte y1 = (byte)(move & 0b111);
+            byte x1 = (byte)((move/8) & 0b111);
+            byte y2 = (byte)((move / 8 / 8) & 0b111);
+            byte x2 = (byte)((move / 8 / 8 / 8) & 0b111);
+            board[x2, y2] = board[x1, y1];
+            board[x1, y1] = 0;
+            //move history?
+            return Win.None;
         }
         public int Evaluate()
         {
@@ -115,7 +121,7 @@ namespace ChessAI
         }
         public Win Turn()
         {
-            String res;
+            short res;
             do
             {
                 res = whitePlayer.Decide(this);

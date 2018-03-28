@@ -6,7 +6,11 @@ namespace ChessAI
 {
     class AlphaBeta : Player
     {
-        public override string Decide(Board board)
+        public AlphaBeta(Color color) : base(color)
+        {
+        }
+
+        public override short Decide(Board board)
         {
             throw new NotImplementedException();
         }

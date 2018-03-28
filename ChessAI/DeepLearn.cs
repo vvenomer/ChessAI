@@ -6,7 +6,11 @@ namespace ChessAI
 {
     class DeepLearn : Player
     {
-        public override string Decide(Board board)
+        public DeepLearn(Color color) : base(color)
+        {
+        }
+
+        public override short Decide(Board board)
         {
             throw new NotImplementedException();
         }
