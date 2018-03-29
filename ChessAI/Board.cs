@@ -59,7 +59,7 @@ namespace ChessAI
                         bool white = (board[w, h] & (byte)Color.White) > 0;
                         Piece piece = (Piece)(board[w, h] - (white ? (byte)Color.White : 0));
                         if (!white)
-                            Console.ForegroundColor = ConsoleColor.Gray;
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
                         switch (piece)
                         {
                             case Piece.Bishop:
