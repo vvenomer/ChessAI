@@ -7,8 +7,11 @@ namespace ChessAI
         
         public byte[,] board { get; private set; }
         Player whitePlayer, blackPlayer;
+        public int turns { get; private set; }
         public Board(Player a, Player b)
         {
+            Console.ForegroundColor = ConsoleColor.White;
+            turns = 0;
             whitePlayer = a.color == Color.White ? a : b;
             blackPlayer = a.color != Color.White ? a : b;
             board = new byte[8,8];
@@ -100,6 +103,14 @@ namespace ChessAI
         public bool IsValidMove(short move)
         {
             //check if given move is valid
+
+            //pawns move forward, but capture diagonally
+
+            //Special moves:
+            //en  passant
+            //castling
+            //double-step move
+            //promotion
             return true; // temporary
         }
         private Win Execute(short move)
@@ -112,6 +123,8 @@ namespace ChessAI
             board[x2, y2] = board[x1, y1];
             board[x1, y1] = 0;
             //move history?
+            //handle special moves
+            //check for checkmate/stalemate and other draw options
             return Win.None;
         }
         public int Evaluate()
@@ -121,6 +134,7 @@ namespace ChessAI
         }
         public Win Turn()
         {
+            turns++;
             short res;
             do
             {

@@ -7,24 +7,37 @@ namespace ChessAI
     class Human : Player
     {
         public Human(Color color) : base(color) { }
-        public override short Decide(Board board)
+        private byte[] GetPiece(string message)
         {
-            board.Print();
-            Console.WriteLine( "Tura " + (color == Color.White ? "Białych" : "Czarnych"));
-            short res=0;
+            byte []outPos = new byte[2];
+            string piece;
             while (true)
             {
-                Console.WriteLine("Wybierz bierkę");
-                string piece = Console.ReadLine();
+                Console.WriteLine(message);
+                piece = Console.ReadLine();
                 if (piece[0] < 'a' || piece[0] > 'h' || piece[1] < '0' || piece[1] > '9')
                 {
                     Console.WriteLine("Złe polecenie");
                     continue;
                 }
-                byte x = (byte)(piece[0] - 'a');
-                byte y = (byte)(8 - (piece[1] - '0'));
-                res = (short)(8 * x + y);
-                byte onBoard = board.board[x, y];
+                break;
+            }
+            outPos[0] = (byte)(piece[0] - 'a');
+            outPos[1] = (byte)(8 - (piece[1] - '0'));
+            return outPos;
+
+        }
+        public override short Decide(Board board)
+        {
+            board.Print();
+            Console.WriteLine( "Tura nr" + board.turns +" " + (color == Color.White ? "Białych" : "Czarnych"));
+            short res=0;
+            while (true)
+            {
+                byte[] pos = GetPiece("Wybierz bierkę");
+                res = (short)(8 * pos[0] + pos[1]);
+
+                byte onBoard = board.board[pos[0], pos[1]];
                 if (onBoard == 0 || (onBoard & (byte)Color.White) != (byte)color)
                 {
                     //not your piece
@@ -34,17 +47,9 @@ namespace ChessAI
             }
             while (true)
             {
-                Console.WriteLine("Ustaw wybraną bierkę");
-                string piece = Console.ReadLine();
-                if (piece[0] < 'a' || piece[0] > 'h' || piece[1] < '0' || piece[1] > '9')
-                {
-                    Console.WriteLine("Złe polecenie");
-                    continue;
-                }
-                byte x = (byte)(piece[0] - 'a');
-                byte y = (byte)(8 - (piece[1] - '0'));
-                res += (short)((8 * x + y)*64);
-                byte onBoard = board.board[x, y];
+                byte[] pos = GetPiece("Ustaw wybraną bierkę");
+                res += (short)((8 * pos[0] + pos[1])*64);
+                byte onBoard = board.board[pos[0], pos[1]];
                 if (onBoard!=0 && (onBoard & (byte)Color.White) == (byte)color)
                 {
                     //your piece
