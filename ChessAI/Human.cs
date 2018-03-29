@@ -15,7 +15,7 @@ namespace ChessAI
 			{
 				Console.WriteLine(message);
 				piece = Console.ReadLine();
-				if (piece[0] < 'a' || piece[0] > 'h' || piece[1] < '0' || piece[1] > '9')
+				if (piece.Length < 2 || piece[0] < 'a' || piece[0] > 'h' || piece[1] < '0' || piece[1] > '9')
 				{
 					Console.WriteLine("Złe polecenie");
 					continue;
