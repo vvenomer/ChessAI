@@ -36,6 +36,7 @@ namespace ChessAI
         }
         public void Print()
         {
+			Console.Clear();
             for(int h = 0; h < 9; h++)
             {
                 for (int w = 0; w < 19; w++)
