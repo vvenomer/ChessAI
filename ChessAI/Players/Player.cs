@@ -13,6 +13,6 @@ namespace ChessAI
             this.color = color;
         }
 
-        public abstract short Decide(Board board);
+        public abstract Point[] Decide(Board board);
     }
 }

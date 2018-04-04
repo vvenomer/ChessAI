@@ -4,13 +4,13 @@ using System.Text;
 
 namespace ChessAI
 {
-    class AlphaBeta : Player
+    class NeuralNetwork : Player
     {
-        public AlphaBeta(Color color) : base(color)
+        public NeuralNetwork(Color color) : base(color)
         {
         }
 
-        public override short Decide(Board board)
+        public override Point[] Decide(Board board)
         {
             throw new NotImplementedException();
         }

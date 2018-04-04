@@ -1,11 +1,12 @@
-﻿using System;
+﻿using ChessAI.Pieces;
+using System;
 
 namespace ChessAI
 {
     class Board
     {
         
-        public byte[,] board { get; private set; }
+        public Piece[,] board { get; private set; }
         Player whitePlayer, blackPlayer;
         public int turns { get; private set; }
         public Board(Player a, Player b)
@@ -14,24 +15,17 @@ namespace ChessAI
             turns = 0;
             whitePlayer = a.color == Color.White ? a : b;
             blackPlayer = a.color != Color.White ? a : b;
-            board = new byte[8,8];
-            board[0, 0] = board[7, 0] = board[0, 7] = board[7, 7] = (byte)Piece.Rook;
-            board[1, 0] = board[6, 0] = board[1, 7] = board[6, 7] = (byte)Piece.Knight;
-            board[2, 0] = board[5, 0] = board[2, 7] = board[5, 7] = (byte)Piece.Bishop;
-            board[3, 0] = board[4, 7] = (byte)Piece.Queen;
-            board[4, 0] = board[3, 7] = (byte)Piece.King;
+            board = new Piece[8,8];
+            //board[0, 0] = board[7, 0] = board[0, 7] = board[7, 7] = (byte)Piece.Rook;
+            //board[1, 0] = board[6, 0] = board[1, 7] = board[6, 7] = (byte)Piece.Knight;
+            //board[2, 0] = board[5, 0] = board[2, 7] = board[5, 7] = (byte)Piece.Bishop;
+            //board[3, 0] = board[4, 7] = (byte)Piece.Queen;
+            board[4, 0] = new King(Color.White);
+            board[3, 7] = new King(Color.Black);
             for(int i = 0; i < 8; i++)
             {
-                board[i, 1] = (byte)Piece.Pawn;
-                board[i, 6] = (byte)Piece.Pawn;
-            }
-            for(int w = 0; w < 8; w++)
-            {
-                for(int h = 0; h < 2; h++)
-                {
-                    board[w, h] += (byte)Color.White;
-                    board[w, 7-h] += (byte)Color.Black;
-                }
+                board[i, 1] = new Pawn(Color.White);
+                board[i, 6] = new Pawn(Color.Black);
             }
         }
         public void Print()
@@ -39,90 +33,63 @@ namespace ChessAI
 			Console.Clear();
             for(int h = 0; h < 9; h++)
             {
+                //display vertical line over the squares
                 for (int w = 0; w < 19; w++)
                     Console.Write( (w%2==0) ? "+" : "-");
                 Console.WriteLine();
                 for(int w = -1; w < 8; w++)
                 {
+                    //put horizontal line before square
                     Console.Write("|");
                     if (w == -1)
                     {
+                        //number the rows
                         if (h < 8)
                             Console.Write(8 - h);
                         else
                             Console.Write(" ");
                     }
+                    //number the columns
                     else if (h == 8)
-                            Console.Write((char)('a' + w));
-                    else
+                        Console.Write((char)('a' + w));
+                    else if (board[w, h] != null)
                     {
-                        bool white = (board[w, h] & (byte)Color.White) > 0;
-                        Piece piece = (Piece)(board[w, h] - (white ? (byte)Color.White : 0));
-                        if (!white)
+                        if (board[w, h].color == Color.Black)
                             Console.ForegroundColor = ConsoleColor.DarkGray;
-                        switch (piece)
-                        {
-                            case Piece.Bishop:
-                                Console.Write("B");
-                                break;
-                            case Piece.King:
-                                Console.Write("K");
-                                break;
-                            case Piece.Knight:
-                                Console.Write("N");
-                                break;
-                            case Piece.Pawn:
-                                Console.Write("P");
-                                break;
-                            case Piece.Queen:
-                                Console.Write("Q");
-                                break;
-                            case Piece.Rook:
-                                Console.Write("R");
-                                break;
-                            default:
-                                Console.Write(" ");
-                                break;
-                        }
+                        //display piece
+                        Console.Write(board[w, h].letter);
 
                     }
+                    else Console.Write(' ');
                     Console.ForegroundColor = ConsoleColor.White;
+                    //additional verical line on the very right
                     if (w == 7)
                         Console.Write("|");
                 }
                 Console.WriteLine();
                 if(h == 8)
                 {
-
+                    //additional horizontal line on the very bottom
                     for (int w = 0; w < 19; w++)
                         Console.Write((w % 2 == 0) ? "+" : "-");
                     Console.WriteLine();
                 }
             }
         }
-
-        public bool IsValidMove(short move)
-        {
-            //check if given move is valid
-
-            //pawns move forward, but capture diagonally
-
-            //Special moves:
-            //en  passant
-            //castling
-            //double-step move
-            //promotion
-            return true; // temporary
-        }
-        private Win Execute(short move)
+        //Special moves: - to include in GetMoves method of Piece class
+        //en  passant
+        //castling 
+        //double-step move
+        //promotion
+        //toggleable special moves?
+        private Win Execute(Point[] move)
         {
             //save move and update board
-            byte y1 = (byte)(move & 0b111);
-            byte x1 = (byte)((move/8) & 0b111);
-            byte y2 = (byte)((move / 8 / 8) & 0b111);
-            byte x2 = (byte)((move / 8 / 8 / 8) & 0b111);
-            board[x2, y2] = board[x1, y1];
-            board[x1, y1] = 0;
+
+            if (board[move[0].x, move[0].y].firstMove)
+                board[move[0].x, move[0].y].firstMove = false;
+            board[move[1].x, move[1].y] = board[move[0].x, move[0].y];
+            board[move[0].x, move[0].y] = null;
             //move history?
             //handle special moves
             //check for checkmate/stalemate and other draw options
@@ -136,19 +103,11 @@ namespace ChessAI
         public Win Turn()
         {
             turns++;
-            short res;
-            do
-            {
-                res = whitePlayer.Decide(this);
-            } while (!IsValidMove(res));
-            Win win = Execute(res);
-            if (win!=Win.None)
+            
+            Win win = Execute(whitePlayer.Decide(this));
+            if (win != Win.None)
                 return win;
-            do
-            {
-                res = blackPlayer.Decide(this);
-            } while (!IsValidMove(res));
-            win = Execute(res);
+            win = Execute(blackPlayer.Decide(this));
             return win;
         }
     }

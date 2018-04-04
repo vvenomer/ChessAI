@@ -10,7 +10,7 @@ namespace ChessAI
         {
         }
 
-        public override short Decide(Board board)
+        public override Point[] Decide(Board board)
         {
             throw new NotImplementedException();
         }
