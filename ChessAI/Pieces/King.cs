@@ -6,12 +6,10 @@ namespace ChessAI.Pieces
 {
     class King : Piece
     {
-        static Figure Figure = Figure.King;
         static char Letter = 'K';
 
         public King(Color color) : base(color) { }
-        public King() { }
-        public override Figure figure { get { return Figure; } }
+        public King() : base() { }
         public override char letter { get { return Letter; } }
 
         public override Point[] GetMoves(Board board, Point myPos)

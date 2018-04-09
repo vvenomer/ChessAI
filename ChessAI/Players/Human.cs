@@ -27,11 +27,10 @@ namespace ChessAI
 		}
 		public override Point[] Decide(Board board)
 		{
-			board.Print();
+			board.Print(null);
 			Console.WriteLine("Tura nr" + board.turns + " " + (color == Color.White ? "Białych" : "Czarnych"));
 			Point[] res = new Point[2];
             Piece onBoard;
-            Point[] moves;
 			while (true)
 			{
 				res[0] = GetPiece("Wybierz bierkę");
@@ -43,9 +42,11 @@ namespace ChessAI
 				}
 				else break;
 			}
-            moves = onBoard.GetMoves(board, res[0]);
-			while (true)
+            Point[] moves = onBoard.GetMoves(board, res[0]);
+            board.Print(moves);
+            while (true)
             {
+                Console.WriteLine("Wybrano bierkę: " + (char)('a' + res[0].x) + (8 - res[0].y).ToString());
                 Console.WriteLine("Dostępne ruchy");
                 foreach (Point move in moves)
                 {
@@ -55,7 +56,6 @@ namespace ChessAI
                 res[1] = GetPiece("Ustaw wybraną bierkę");
 				if (!Array.Exists(moves, x => x.x == res[1].x && x.y == res[1].y))
 				{
-					//your piece
 					Console.WriteLine("Nie możesz wykonać takiego ruchu");
 				}
 				else break;

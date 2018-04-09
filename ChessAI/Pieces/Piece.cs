@@ -6,22 +6,19 @@ namespace ChessAI
 {
     abstract class Piece
     {
-        static Figure Figure;
-        static char Letter;
-        public bool firstMove { get; set; }
+        public int moves { get; set; }
         public Color color { get; set; }
 
         public abstract char letter { get;  }
-        public abstract Figure figure { get; }
 
         public Piece(Color color)
         {
-            firstMove = true;
+            moves = 0;
             this.color = color;
         }
         public Piece()
         {
-            firstMove = true;
+            moves = 0;
         }
 
         public abstract Point[] GetMoves(Board board, Point myPos);

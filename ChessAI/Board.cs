@@ -16,19 +16,22 @@ namespace ChessAI
             whitePlayer = a.color == Color.White ? a : b;
             blackPlayer = a.color != Color.White ? a : b;
             board = new Piece[8,8];
-            //board[0, 0] = board[7, 0] = board[0, 7] = board[7, 7] = (byte)Piece.Rook;
+            board[0, 0] = new Rook(Color.White);
+            board[7, 0] = new Rook(Color.White);
+            board[0, 7] = new Rook(Color.Black);
+            board[7, 7] = new Rook(Color.Black);
             //board[1, 0] = board[6, 0] = board[1, 7] = board[6, 7] = (byte)Piece.Knight;
             //board[2, 0] = board[5, 0] = board[2, 7] = board[5, 7] = (byte)Piece.Bishop;
-            //board[3, 0] = board[4, 7] = (byte)Piece.Queen;
+            //board[3, 0] = board[3, 7] = (byte)Piece.Queen;
             board[4, 0] = new King(Color.White);
-            board[3, 7] = new King(Color.Black);
+            board[4, 7] = new King(Color.Black);
             for(int i = 0; i < 8; i++)
             {
                 board[i, 1] = new Pawn(Color.White);
                 board[i, 6] = new Pawn(Color.Black);
             }
         }
-        public void Print()
+        public void Print(Point[] markers)
         {
 			Console.Clear();
             for(int h = 0; h < 9; h++)
@@ -41,6 +44,14 @@ namespace ChessAI
                 {
                     //put horizontal line before square
                     Console.Write("|");
+                    if (markers != null)
+                    {
+                        foreach (Point marker in markers)
+                        {
+                            if (marker.x == w && marker.y == h)
+                                Console.BackgroundColor = ConsoleColor.DarkRed;
+                        }
+                    }
                     if (w == -1)
                     {
                         //number the rows
@@ -61,6 +72,7 @@ namespace ChessAI
 
                     }
                     else Console.Write(' ');
+                    Console.BackgroundColor = ConsoleColor.Black;
                     Console.ForegroundColor = ConsoleColor.White;
                     //additional verical line on the very right
                     if (w == 7)
@@ -77,19 +89,54 @@ namespace ChessAI
             }
         }
         //Special moves: - to include in GetMoves method of Piece class
-        //en  passant
+        //en passant - described in pawn class
         //castling 
-        //double-step move
-        //promotion
+        //double-step move - done
+        //promotion - started in execute
+
         //toggleable special moves?
         private Win Execute(Point[] move)
         {
             //save move and update board
-
-            if (board[move[0].x, move[0].y].firstMove)
-                board[move[0].x, move[0].y].firstMove = false;
+            
+            board[move[0].x, move[0].y].moves++;
             board[move[1].x, move[1].y] = board[move[0].x, move[0].y];
             board[move[0].x, move[0].y] = null;
+            //pawn promotion
+            if( (
+                    (move[1].y == 7 && board[move[1].x, move[1].y].color==Color.White)
+                    ||
+                    (move[1].y == 0 && board[move[1].x, move[1].y].color == Color.Black)
+                )
+                && board[move[1].x, move[1].y].letter == 'P')
+            {
+                //promote this pawn
+                string figure;
+                Piece newPiece=null;
+                while(true)
+                {
+                    figure = Console.ReadLine();
+                    if (figure.Length != 1) continue;
+                    switch(figure[0])
+                    {
+                        case 'Q':
+                            //newPiece = new Queen(board[move[1].x, move[1].y].color);
+                            break;
+                        case 'K':
+                            break;
+                        case 'R':
+                            newPiece = new Rook(board[move[1].x, move[1].y].color);
+                            break;
+                        case 'B':
+                            break;
+                        default:
+                            continue;
+                    }
+                    if (newPiece != null)
+                        break;
+                }
+                board[move[1].x, move[1].y] = newPiece;
+            }
             //move history?
             //handle special moves
             //check for checkmate/stalemate and other draw options
