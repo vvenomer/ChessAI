@@ -6,7 +6,7 @@ namespace ChessAI.Pieces
 {
     class King : Piece
     {
-        static char Letter = 'K';
+        const char Letter = 'K';
 
         public King(Color color) : base(color) { }
         public King() : base() { }

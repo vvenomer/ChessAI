@@ -4,12 +4,12 @@ using System.Text;
 
 namespace ChessAI.Pieces
 {
-    class Rook : Piece
+    class Queen : Piece
     {
-        const char Letter = 'R';
-        public Rook() : base() { }
+        const char Letter = 'Q';
+        public Queen() { }
 
-        public Rook(Color color) : base(color) { }
+        public Queen(Color color) : base(color) { }
 
         public override char letter { get { return Letter; } }
 
@@ -34,7 +34,39 @@ namespace ChessAI.Pieces
         public override Point[] GetMoves(Board board, Point myPos)
         {
             List<Point> list = new List<Point>();
-            if(myPos.y<7) //down
+            if (myPos.y < 7 && myPos.x > 0) //down left
+            {
+                for (int i = 1; myPos.y + i <= 7 && myPos.x - i >= 0; i++)
+                {
+                    if (!AddToList(list, board, myPos.x - i, myPos.y + i))
+                        break;
+                }
+            }
+            if (myPos.y < 7 && myPos.x < 7)//down right
+            {
+                for (int i = 1; myPos.y + i <= 7 && myPos.x + i <= 7; i++)
+                {
+                    if (!AddToList(list, board, myPos.x + i, myPos.y + i))
+                        break;
+                }
+            }
+            if (myPos.y > 0 && myPos.x > 0)//up left
+            {
+                for (int i = 1; myPos.x - i >= 0 && myPos.y - i >= 0; i++)
+                {
+                    if (!AddToList(list, board, myPos.x - i, myPos.y - i))
+                        break;
+                }
+            }
+            if (myPos.y > 0 && myPos.x < 7)//up right
+            {
+                for (int i = 1; myPos.y - i >= 0 && myPos.x + i <= 7; i++)
+                {
+                    if (!AddToList(list, board, myPos.x + i, myPos.y - i))
+                        break;
+                }
+            }
+            if (myPos.y < 7) //down
             {
                 for (int i = myPos.y + 1; i <= 7; i++)
                 {

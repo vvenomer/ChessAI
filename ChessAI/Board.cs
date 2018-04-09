@@ -16,15 +16,20 @@ namespace ChessAI
             whitePlayer = a.color == Color.White ? a : b;
             blackPlayer = a.color != Color.White ? a : b;
             board = new Piece[8,8];
-            board[0, 0] = new Rook(Color.White);
-            board[7, 0] = new Rook(Color.White);
-            board[0, 7] = new Rook(Color.Black);
-            board[7, 7] = new Rook(Color.Black);
-            //board[1, 0] = board[6, 0] = board[1, 7] = board[6, 7] = (byte)Piece.Knight;
-            //board[2, 0] = board[5, 0] = board[2, 7] = board[5, 7] = (byte)Piece.Bishop;
-            //board[3, 0] = board[3, 7] = (byte)Piece.Queen;
-            board[4, 0] = new King(Color.White);
-            board[4, 7] = new King(Color.Black);
+
+            board[0, 0] = new Rook(Color.White); board[7, 0] = new Rook(Color.White);
+            board[0, 7] = new Rook(Color.Black); board[7, 7] = new Rook(Color.Black);
+
+            board[2, 0] = new Bishop(Color.White); board[5, 0] = new Bishop(Color.White);
+            board[2, 7] = new Bishop(Color.Black); board[5, 7] = new Bishop(Color.Black);
+
+            board[1, 0] = new Knight(Color.White); board[6, 0] = new Knight(Color.White);
+            board[1, 7] = new Knight(Color.Black); board[6, 7] = new Knight(Color.Black);
+
+            board[3, 0] = new Queen(Color.White); board[3, 7] = new Queen(Color.Black);
+
+            board[4, 0] = new King(Color.White); board[4, 7] = new King(Color.Black);
+
             for(int i = 0; i < 8; i++)
             {
                 board[i, 1] = new Pawn(Color.White);
@@ -111,6 +116,8 @@ namespace ChessAI
                 && board[move[1].x, move[1].y].letter == 'P')
             {
                 //promote this pawn
+                Console.WriteLine("Pionek doszedł do linii przemiany. Wybierz na co chcesz go promować:");
+                Console.WriteLine("Q - hetman, N - goniec, R - wieża, B - skoczek");
                 string figure;
                 Piece newPiece=null;
                 while(true)
@@ -120,14 +127,15 @@ namespace ChessAI
                     switch(figure[0])
                     {
                         case 'Q':
-                            //newPiece = new Queen(board[move[1].x, move[1].y].color);
+                            newPiece = new Queen(board[move[1].x, move[1].y].color);
                             break;
-                        case 'K':
+                        case 'N':
                             break;
                         case 'R':
                             newPiece = new Rook(board[move[1].x, move[1].y].color);
                             break;
                         case 'B':
+                            newPiece = new Bishop(board[move[1].x, move[1].y].color);
                             break;
                         default:
                             continue;

@@ -6,7 +6,7 @@ namespace ChessAI.Pieces
 {
     class Pawn : Piece
     {
-        static char Letter = 'P';
+        const char Letter = 'P';
 
         public Pawn(Color color) : base(color) { }
         public Pawn() : base() { }

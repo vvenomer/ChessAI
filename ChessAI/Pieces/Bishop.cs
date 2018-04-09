@@ -4,15 +4,15 @@ using System.Text;
 
 namespace ChessAI.Pieces
 {
-    class Rook : Piece
+    class Bishop : Piece
     {
-        const char Letter = 'R';
-        public Rook() : base() { }
+        const char Letter = 'B';
+        public Bishop() { }
 
-        public Rook(Color color) : base(color) { }
+        public Bishop(Color color) : base(color) { }
 
         public override char letter { get { return Letter; } }
-
+        //useful in all pieces, that can move in lines -> add  abstrac class for that?
         private bool AddToList(List<Point> list, Board board, int x, int y)
         {
 
@@ -30,39 +30,38 @@ namespace ChessAI.Pieces
             }
             return true;
         }
-
         public override Point[] GetMoves(Board board, Point myPos)
         {
             List<Point> list = new List<Point>();
-            if(myPos.y<7) //down
+            if (myPos.y < 7 && myPos.x > 0) //down left
             {
-                for (int i = myPos.y + 1; i <= 7; i++)
+                for (int i = 1; myPos.y + i <= 7 && myPos.x - i >= 0; i++)
                 {
-                    if (!AddToList(list, board, myPos.x, i))
+                    if (!AddToList(list, board, myPos.x - 1, myPos.y + i))
                         break;
                 }
             }
-            if (myPos.y > 0)//up
+            if (myPos.y < 7 && myPos.x < 7)//down right
             {
-                for (int i = myPos.y - 1; i >= 0; i--)
+                for (int i = 1; myPos.y + i <= 7 && myPos.x + i <= 7; i++)
                 {
-                    if (!AddToList(list, board, myPos.x, i))
+                    if (!AddToList(list, board, myPos.x + i, myPos.y + i))
                         break;
                 }
             }
-            if (myPos.x < 7)//right
+            if (myPos.y > 0 && myPos.x > 0)//up left
             {
-                for (int i = myPos.x + 1; i <= 7; i++)
+                for (int i = 1; myPos.x - i >= 0 && myPos.y - i >= 0; i++)
                 {
-                    if (!AddToList(list, board, i, myPos.y))
+                    if (!AddToList(list, board, myPos.x - i, myPos.y - i))
                         break;
                 }
             }
-            if (myPos.x > 0)//left
+            if (myPos.y > 0 && myPos.x < 7)//up right
             {
-                for (int i = myPos.x - 1; i >= 0; i--)
+                for (int i = 1; myPos.y - i >= 0 && myPos.x + i <= 7; i++)
                 {
-                    if (!AddToList(list, board, i, myPos.y))
+                    if (!AddToList(list, board, myPos.x + i, myPos.y - i))
                         break;
                 }
             }
