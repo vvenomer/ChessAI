@@ -7,3 +7,5 @@ ChessAI/bin/*
 /ChessAI/.vs/ChessAI/v15/Server/sqlite3/storage.ide-shm
 /ChessAI/.vs/ChessAI/v15/Server/sqlite3/storage.ide
 /ChessAI/.vs/ChessAI/v15/Server/sqlite3/db.lock
+/.vs/ChessAI/v15
+/.vs
