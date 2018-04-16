@@ -38,17 +38,18 @@ namespace ChessAI
 				board[i, 6] = new Pawn(Color.Black);
 			}
 		}
+
 		// methods
 		public void Print(Point[] markers)
 		{
 			Console.Clear();
-			for (int h = 0; h < 9; h++)
+			for (int height = 0; height < 9; height++)
 			{
 				//display vertical line over the squares
-				for (int w = 0; w < 19; w++)
-					Console.Write((w % 2 == 0) ? "+" : "-");
+				for (int width = 0; width < 19; width++)
+					Console.Write((width % 2 == 0) ? "+" : "-");
 				Console.WriteLine();
-				for (int w = -1; w < 8; w++)
+				for (int width = -1; width < 8; width++)
 				{
 					//put horizontal line before square
 					Console.Write("|");
@@ -56,38 +57,38 @@ namespace ChessAI
 					{
 						foreach (Point marker in markers)
 						{
-							if (marker.x == w && marker.y == h)
+							if (marker.x == width && marker.y == height)
 								Console.BackgroundColor = ConsoleColor.DarkRed;
 						}
 					}
-					if (w == -1)
+					if (width == -1)
 					{
 						//number the rows
-						if (h < 8)
-							Console.Write(8 - h);
+						if (height < 8)
+							Console.Write(8 - height);
 						else
 							Console.Write(" ");
 					}
 					//number the columns
-					else if (h == 8)
-						Console.Write((char)('a' + w));
-					else if (board[w, h] != null)
+					else if (height == 8)
+						Console.Write((char)('a' + width));
+					else if (board[width, height] != null)
 					{
-						if (board[w, h].color == Color.Black)
+						if (board[width, height].color == Color.Black)
 							Console.ForegroundColor = ConsoleColor.DarkGray;
 						//display piece
-						Console.Write(board[w, h].letter);
+						Console.Write(board[width, height].letter);
 
 					}
 					else Console.Write(' ');
 					Console.BackgroundColor = ConsoleColor.Black;
 					Console.ForegroundColor = ConsoleColor.White;
 					//additional verical line on the very right
-					if (w == 7)
+					if (width == 7)
 						Console.Write("|");
 				}
 				Console.WriteLine();
-				if (h == 8)
+				if (height == 8)
 				{
 					//additional horizontal line on the very bottom
 					for (int w = 0; w < 19; w++)
