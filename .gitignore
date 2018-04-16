@@ -1,11 +1,35 @@
-ChessAI/obj/*
-ChessAI/bin/*
-*.sln
-*.csproj*
-/ChessAI/.vs/ChessAI/v15/.suo
-/ChessAI/.vs/ChessAI/v15/Server/sqlite3/storage.ide-wal
-/ChessAI/.vs/ChessAI/v15/Server/sqlite3/storage.ide-shm
-/ChessAI/.vs/ChessAI/v15/Server/sqlite3/storage.ide
-/ChessAI/.vs/ChessAI/v15/Server/sqlite3/db.lock
-/.vs/ChessAI/v15
-/.vs
+S junk files
+[Tt]humbs.db
+*.DS_Store
+
+#Visual Studio files
+*.[Oo]bj
+*.user
+*.aps
+*.pch
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.[Cc]ache
+*.ilk
+*.log
+*.lib
+*.sbr
+*.sdf
+ipch/
+obj/
+.vs/
+[Bb]in
+[Dd]ebug*/
+[Rr]elease*/
+Ankh.NoLoad
+
+#Project files
+[Bb]uild/
+

@@ -1,155 +1,173 @@
-﻿using System;
+﻿using ChessAI.Pieces;
+using System;
 
 namespace ChessAI
 {
-    class Board
-    {
-        
-        public byte[,] board { get; private set; }
-        Player whitePlayer, blackPlayer;
-        public int turns { get; private set; }
-        public Board(Player a, Player b)
-        {
-            Console.ForegroundColor = ConsoleColor.White;
-            turns = 0;
-            whitePlayer = a.color == Color.White ? a : b;
-            blackPlayer = a.color != Color.White ? a : b;
-            board = new byte[8,8];
-            board[0, 0] = board[7, 0] = board[0, 7] = board[7, 7] = (byte)Piece.Rook;
-            board[1, 0] = board[6, 0] = board[1, 7] = board[6, 7] = (byte)Piece.Knight;
-            board[2, 0] = board[5, 0] = board[2, 7] = board[5, 7] = (byte)Piece.Bishop;
-            board[3, 0] = board[4, 7] = (byte)Piece.Queen;
-            board[4, 0] = board[3, 7] = (byte)Piece.King;
-            for(int i = 0; i < 8; i++)
-            {
-                board[i, 1] = (byte)Piece.Pawn;
-                board[i, 6] = (byte)Piece.Pawn;
-            }
-            for(int w = 0; w < 8; w++)
-            {
-                for(int h = 0; h < 2; h++)
-                {
-                    board[w, h] += (byte)Color.White;
-                    board[w, 7-h] += (byte)Color.Black;
-                }
-            }
-        }
-        public void Print()
-        {
+	class Board
+	{
+		// members
+		public Piece[,] board { get; private set; }
+		Player whitePlayer, blackPlayer;
+		public int turns { get; private set; }
+
+		// constructors
+		public Board(Player a, Player b)
+		{
+			Console.ForegroundColor = ConsoleColor.White;
+			turns = 0;
+			whitePlayer = a.color == Color.White ? a : b;
+			blackPlayer = a.color != Color.White ? a : b;
+			board = new Piece[8, 8];
+
+			board[0, 0] = new Rook(Color.White); board[7, 0] = new Rook(Color.White);
+			board[0, 7] = new Rook(Color.Black); board[7, 7] = new Rook(Color.Black);
+
+			board[2, 0] = new Bishop(Color.White); board[5, 0] = new Bishop(Color.White);
+			board[2, 7] = new Bishop(Color.Black); board[5, 7] = new Bishop(Color.Black);
+
+			board[1, 0] = new Knight(Color.White); board[6, 0] = new Knight(Color.White);
+			board[1, 7] = new Knight(Color.Black); board[6, 7] = new Knight(Color.Black);
+
+			board[3, 0] = new Queen(Color.White); board[3, 7] = new Queen(Color.Black);
+
+			board[4, 0] = new King(Color.White); board[4, 7] = new King(Color.Black);
+
+			for (int i = 0; i < 8; i++)
+			{
+				board[i, 1] = new Pawn(Color.White);
+				board[i, 6] = new Pawn(Color.Black);
+			}
+		}
+
+		// methods
+		public void Print(Point[] markers)
+		{
 			Console.Clear();
-            for(int h = 0; h < 9; h++)
-            {
-                for (int w = 0; w < 19; w++)
-                    Console.Write( (w%2==0) ? "+" : "-");
-                Console.WriteLine();
-                for(int w = -1; w < 8; w++)
-                {
-                    Console.Write("|");
-                    if (w == -1)
-                    {
-                        if (h < 8)
-                            Console.Write(8 - h);
-                        else
-                            Console.Write(" ");
-                    }
-                    else if (h == 8)
-                            Console.Write((char)('a' + w));
-                    else
-                    {
-                        bool white = (board[w, h] & (byte)Color.White) > 0;
-                        Piece piece = (Piece)(board[w, h] - (white ? (byte)Color.White : 0));
-                        if (!white)
-                            Console.ForegroundColor = ConsoleColor.DarkGray;
-                        switch (piece)
-                        {
-                            case Piece.Bishop:
-                                Console.Write("B");
-                                break;
-                            case Piece.King:
-                                Console.Write("K");
-                                break;
-                            case Piece.Knight:
-                                Console.Write("N");
-                                break;
-                            case Piece.Pawn:
-                                Console.Write("P");
-                                break;
-                            case Piece.Queen:
-                                Console.Write("Q");
-                                break;
-                            case Piece.Rook:
-                                Console.Write("R");
-                                break;
-                            default:
-                                Console.Write(" ");
-                                break;
-                        }
+			for (int height = 0; height < 9; height++)
+			{
+				//display vertical line over the squares
+				for (int width = 0; width < 19; width++)
+					Console.Write((width % 2 == 0) ? "+" : "-");
+				Console.WriteLine();
+				for (int width = -1; width < 8; width++)
+				{
+					//put horizontal line before square
+					Console.Write("|");
+					if (markers != null)
+					{
+						foreach (Point marker in markers)
+						{
+							if (marker.x == width && marker.y == height)
+								Console.BackgroundColor = ConsoleColor.DarkRed;
+						}
+					}
+					if (width == -1)
+					{
+						//number the rows
+						if (height < 8)
+							Console.Write(8 - height);
+						else
+							Console.Write(" ");
+					}
+					//number the columns
+					else if (height == 8)
+						Console.Write((char)('a' + width));
+					else if (board[width, height] != null)
+					{
+						if (board[width, height].color == Color.Black)
+							Console.ForegroundColor = ConsoleColor.DarkGray;
+						//display piece
+						Console.Write(board[width, height].letter);
 
-                    }
-                    Console.ForegroundColor = ConsoleColor.White;
-                    if (w == 7)
-                        Console.Write("|");
-                }
-                Console.WriteLine();
-                if(h == 8)
-                {
+					}
+					else Console.Write(' ');
+					Console.BackgroundColor = ConsoleColor.Black;
+					Console.ForegroundColor = ConsoleColor.White;
+					//additional verical line on the very right
+					if (width == 7)
+						Console.Write("|");
+				}
+				Console.WriteLine();
+				if (height == 8)
+				{
+					//additional horizontal line on the very bottom
+					for (int w = 0; w < 19; w++)
+						Console.Write((w % 2 == 0) ? "+" : "-");
+					Console.WriteLine();
+				}
+			}
+		}
+		//Special moves: - to include in GetMoves method of Piece class
+		//en passant - described in pawn class
+		//castling 
+		//double-step move - done
+		//promotion - started in execute
 
-                    for (int w = 0; w < 19; w++)
-                        Console.Write((w % 2 == 0) ? "+" : "-");
-                    Console.WriteLine();
-                }
-            }
-        }
+		//toggleable special moves?
+		private Win Execute(Point[] move)
+		{
+			//save move and update board
 
-        public bool IsValidMove(short move)
-        {
-            //check if given move is valid
+			board[move[0].x, move[0].y].moves++;
+			board[move[1].x, move[1].y] = board[move[0].x, move[0].y];
+			board[move[0].x, move[0].y] = null;
+			//pawn promotion
+			if ((
+					(move[1].y == 7 && board[move[1].x, move[1].y].color == Color.White)
+					||
+					(move[1].y == 0 && board[move[1].x, move[1].y].color == Color.Black)
+				)
+				&& board[move[1].x, move[1].y].letter == 'P')
+			{
+				//promote this pawn
+				Console.WriteLine("Pionek doszedł do linii przemiany. Wybierz na co chcesz go promować:");
+				Console.WriteLine("Q - hetman, N - goniec, R - wieża, B - skoczek");
+				string figure;
+				Piece newPiece = null;
+				while (true)
+				{
+					figure = Console.ReadLine();
+					if (figure.Length != 1) continue;
+					switch (figure[0])
+					{
+						case 'Q':
+							newPiece = new Queen(board[move[1].x, move[1].y].color);
+							break;
+						case 'N':
+							break;
+						case 'R':
+							newPiece = new Rook(board[move[1].x, move[1].y].color);
+							break;
+						case 'B':
+							newPiece = new Bishop(board[move[1].x, move[1].y].color);
+							break;
+						default:
+							continue;
+					}
+					if (newPiece != null)
+						break;
+				}
+				board[move[1].x, move[1].y] = newPiece;
+			}
+			//move history?
+			//handle special moves
+			//check for checkmate/stalemate and other draw options
+			return Win.None;
+		}
+		public int Evaluate()
+		{
+			//tells in how good position player is
+			throw new NotImplementedException();
+		}
+		public Win Turn()
+		{
+			turns++;
 
-            //pawns move forward, but capture diagonally
-
-            //Special moves:
-            //en  passant
-            //castling
-            //double-step move
-            //promotion
-            return true; // temporary
-        }
-        private Win Execute(short move)
-        {
-            //save move and update board
-            byte y1 = (byte)(move & 0b111);
-            byte x1 = (byte)((move/8) & 0b111);
-            byte y2 = (byte)((move / 8 / 8) & 0b111);
-            byte x2 = (byte)((move / 8 / 8 / 8) & 0b111);
-            board[x2, y2] = board[x1, y1];
-            board[x1, y1] = 0;
-            //move history?
-            //handle special moves
-            //check for checkmate/stalemate and other draw options
-            return Win.None;
-        }
-        public int Evaluate()
-        {
-            //tells in how good position player is
-            throw new NotImplementedException();
-        }
-        public Win Turn()
-        {
-            turns++;
-            short res;
-            do
-            {
-                res = whitePlayer.Decide(this);
-            } while (!IsValidMove(res));
-            Win win = Execute(res);
-            if (win!=Win.None)
-                return win;
-            do
-            {
-                res = blackPlayer.Decide(this);
-            } while (!IsValidMove(res));
-            win = Execute(res);
-            return win;
-        }
-    }
+			Win win = Execute(whitePlayer.Decide(this));
+			if (win != Win.None)
+				return win;
+			win = Execute(blackPlayer.Decide(this));
+			return win;
+		}
+	}
 }
