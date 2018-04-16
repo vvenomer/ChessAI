@@ -6,12 +6,14 @@ namespace ChessAI.Pieces
 {
     class Bishop : Piece
     {
+		// members
         const char Letter = 'B';
-        public Bishop() { }
+        public override char letter { get { return Letter; } }
 
+		// constructors
+        public Bishop() { }
         public Bishop(Color color) : base(color) { }
 
-        public override char letter { get { return Letter; } }
         //useful in all pieces, that can move in lines -> add  abstrac class for that?
         private bool AddToList(List<Point> list, Board board, int x, int y)
         {
