@@ -22,6 +22,8 @@ S junk files
 *.lib
 *.sbr
 *.sdf
+*.csproj*
+*.sln
 ipch/
 obj/
 .vs/
