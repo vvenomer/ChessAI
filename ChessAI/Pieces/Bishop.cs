@@ -39,7 +39,7 @@ namespace ChessAI.Pieces
             {
                 for (int i = 1; myPos.y + i <= 7 && myPos.x - i >= 0; i++)
                 {
-                    if (!AddToList(list, board, myPos.x - 1, myPos.y + i))
+                    if (!AddToList(list, board, myPos.x - i, myPos.y + i))
                         break;
                 }
             }

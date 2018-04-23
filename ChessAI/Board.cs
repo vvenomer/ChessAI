@@ -101,7 +101,7 @@ namespace ChessAI
 		//en passant - described in pawn class
 		//castling 
 		//double-step move - done
-		//promotion - started in execute
+		//promotion - done
 
 		//toggleable special moves?
 		private Win Execute(Point[] move)
@@ -134,6 +134,7 @@ namespace ChessAI
 							newPiece = new Queen(board[move[1].x, move[1].y].color);
 							break;
 						case 'N':
+                            newPiece = new Knight(board[move[1].x, move[1].y].color);
 							break;
 						case 'R':
 							newPiece = new Rook(board[move[1].x, move[1].y].color);
