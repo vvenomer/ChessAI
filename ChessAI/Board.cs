@@ -101,7 +101,7 @@ namespace ChessAI
 		}
 		//Special moves: - to include in GetMoves method of Piece class
 		//en passant - described in pawn class
-		//castling 
+		//castling - done, but gonna need to come back to it once checking for win is done
 		//double-step move - done
 		//promotion - done
 
@@ -110,11 +110,21 @@ namespace ChessAI
 		{
 			//save move and update board
 
+            //need to check if my king won't be in check after move(maybe in GetMoves)
 			board[move[0].x, move[0].y].moves++;
 			board[move[1].x, move[1].y] = board[move[0].x, move[0].y];
 			board[move[0].x, move[0].y] = null;
             Piece lastMoved = board[move[1].x, move[1].y];
             Color playerColor = lastMoved.color;
+            //castling
+            if(lastMoved.letter=='K' && Math.Abs(move[0].x-move[1].x)==2)
+            {
+                Point[] newMove = new Point[2];
+                newMove[0].x = (move[1].x - move[0].x) > 0 ? 7 : 0;
+                newMove[0].y = newMove[1].y = move[1].y;
+                newMove[1].x = (move[1].x + move[0].x) / 2;
+                Win w = Execute(newMove); //to rethink (when checking for win is done)
+            }
             //pawn promotion
             if ((
 					(move[1].y == 7 && playerColor == Color.White)
@@ -152,6 +162,7 @@ namespace ChessAI
 					if (newPiece != null)
 						break;
 				}
+                newPiece.moves = lastMoved.moves;
 				board[move[1].x, move[1].y] = newPiece;
 			}
             //move history?
