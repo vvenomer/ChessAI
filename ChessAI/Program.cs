@@ -13,7 +13,7 @@ namespace ChessAI
             do
             {
                 playerWon = board.Turn();
-            } while (playerWon == Win.None);
+            } while (playerWon != Win.Black || playerWon != Win.White || playerWon != Win.Stalemate);
             Console.ReadKey();
         }
     }

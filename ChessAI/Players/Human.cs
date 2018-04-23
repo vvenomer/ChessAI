@@ -42,7 +42,7 @@ namespace ChessAI
 				}
 				else break;
 			}
-            Point[] moves = onBoard.GetMoves(board, res[0]);
+            Point[] moves = onBoard.GetMoves(board, res[0]).ToArray();
             board.Print(moves);
             while (true)
             {

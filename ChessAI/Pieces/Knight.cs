@@ -13,7 +13,7 @@ namespace ChessAI.Pieces
 
         public override char letter { get { return Letter; } }
 
-        public override Point[] GetMoves(Board board, Point myPos)
+        public override List<Point> GetMoves(Board board, Point myPos)
         {
             List<Point> list = new List<Point>();
             int x = 2, y =1;
@@ -30,7 +30,7 @@ namespace ChessAI.Pieces
                         && (board.board[myPos.x + x, myPos.y+y]==null || board.board[myPos.x + x, myPos.y + y].color!=color))
                     list.Add(new Point(myPos.x + x, myPos.y + y));
             }
-            return list.ToArray();
+            return list;
         }
     }
 }

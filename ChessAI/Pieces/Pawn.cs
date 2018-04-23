@@ -12,7 +12,7 @@ namespace ChessAI.Pieces
         public Pawn() : base() { }
         public override char letter { get { return Letter; } }
 
-        public override Point[] GetMoves(Board board, Point myPos)
+        public override List<Point> GetMoves(Board board, Point myPos)
         {
             List<Point> list = new List<Point>();
             int way = color == Color.White ? 1 : -1;
@@ -47,7 +47,7 @@ namespace ChessAI.Pieces
             }
             //en passant
             
-            return list.ToArray();
+            return list;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace ChessAI.Pieces
         public King() : base() { }
         public override char letter { get { return Letter; } }
 
-        public override Point[] GetMoves(Board board, Point myPos)
+        public override List<Point> GetMoves(Board board, Point myPos)
         {
             List<Point> list = new List<Point>();
             int xMin = myPos.x > 1 ? myPos.x - 1 : myPos.x;
@@ -30,8 +30,8 @@ namespace ChessAI.Pieces
                 }
             }
             //special moves
-            //...
-            return list.ToArray();
+            //... castling
+            return list;
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using ChessAI.Pieces;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ChessAI
 {
@@ -111,13 +113,15 @@ namespace ChessAI
 			board[move[0].x, move[0].y].moves++;
 			board[move[1].x, move[1].y] = board[move[0].x, move[0].y];
 			board[move[0].x, move[0].y] = null;
-			//pawn promotion
-			if ((
-					(move[1].y == 7 && board[move[1].x, move[1].y].color == Color.White)
+            Piece lastMoved = board[move[1].x, move[1].y];
+            Color playerColor = lastMoved.color;
+            //pawn promotion
+            if ((
+					(move[1].y == 7 && playerColor == Color.White)
 					||
-					(move[1].y == 0 && board[move[1].x, move[1].y].color == Color.Black)
+					(move[1].y == 0 && playerColor == Color.Black)
 				)
-				&& board[move[1].x, move[1].y].letter == 'P')
+				&& lastMoved.letter == 'P')
 			{
 				//promote this pawn
 				Console.WriteLine("Pionek doszedł do linii przemiany. Wybierz na co chcesz go promować:");
@@ -131,16 +135,16 @@ namespace ChessAI
 					switch (figure[0])
 					{
 						case 'Q':
-							newPiece = new Queen(board[move[1].x, move[1].y].color);
+							newPiece = new Queen(playerColor);
 							break;
 						case 'N':
-                            newPiece = new Knight(board[move[1].x, move[1].y].color);
+                            newPiece = new Knight(playerColor);
 							break;
 						case 'R':
-							newPiece = new Rook(board[move[1].x, move[1].y].color);
+							newPiece = new Rook(playerColor);
 							break;
 						case 'B':
-							newPiece = new Bishop(board[move[1].x, move[1].y].color);
+							newPiece = new Bishop(playerColor);
 							break;
 						default:
 							continue;
@@ -150,10 +154,51 @@ namespace ChessAI
 				}
 				board[move[1].x, move[1].y] = newPiece;
 			}
-			//move history?
-			//handle special moves
-			//check for checkmate/stalemate and other draw options
-			return Win.None;
+            //move history?
+            //handle special moves
+
+            //check for checkmate/stalemate and other draw options
+
+            //possible optimalization:
+            //start searching from top for white player and from bottom player
+            //stop searching when found nr of pieces they have (maybe keep nr of them somewhere)
+            List<Piece> checingPieces = new List<Piece>();
+            for (int height = 0; height < 8; height++)
+            {
+                for (int width = 0; width < 8; width++)
+                {
+                    if (board[width, height].color == playerColor)
+                    {
+                        Piece piece = board[width, height];
+                        List<Point> checking = piece.GetMoves(this, new Point(width, height)).Where(
+                            x => { Piece dest = board[x.x, x.y]; return dest.color != playerColor && dest.letter == 'K'; }
+                            ).ToList();
+                        checingPieces.Add(piece);
+                    }
+                }
+            }
+
+            if (checingPieces.Count == 0)
+                return Win.None;
+            else
+            {
+                //pseudo code to differentiate between check and checkmate
+                //simulate each possible opponent move, then run checking for check again
+                //if check stopped - cool
+                //else continue checking
+                //nothing stopped it - checkmate
+                //^ optimalization - checking for check can be started with peices that were checking it before,
+                //but the rest should be checked too in case:
+                //B Q|
+                //Br | player color differentiated by upper/lower case letters
+                //  k| can't move rook to the left, because bishop will be able to hit king
+                //---* so that needs to be detected as check mate
+
+                if (true) //temp - should be: can opponent block, which is kinda hard as described above
+                    return playerColor==Color.Black ? Win.BlackCheck : Win.WhiteCheck;
+                else return playerColor==Color.Black? Win.Black : Win.White;
+            }
+            //stalemate?
 		}
 		public int Evaluate()
 		{
@@ -165,7 +210,8 @@ namespace ChessAI
 			turns++;
 
 			Win win = Execute(whitePlayer.Decide(this));
-			if (win != Win.None)
+
+			if (win == Win.White  || win == Win.Stalemate)
 				return win;
 			win = Execute(blackPlayer.Decide(this));
 			return win;

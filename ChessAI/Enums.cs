@@ -17,7 +17,9 @@
     enum Win
     {
         Black,
+        BlackCheck,
         White,
+        WhiteCheck,
         None,
         Stalemate
     }

@@ -31,7 +31,7 @@ namespace ChessAI.Pieces
             return true;
         }
 
-        public override Point[] GetMoves(Board board, Point myPos)
+        public override List<Point> GetMoves(Board board, Point myPos)
         {
             List<Point> list = new List<Point>();
             if (myPos.y < 7 && myPos.x > 0) //down left
@@ -98,7 +98,7 @@ namespace ChessAI.Pieces
                         break;
                 }
             }
-            return list.ToArray();
+            return list;
         }
     }
 }

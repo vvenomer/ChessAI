@@ -21,7 +21,7 @@ namespace ChessAI
             moves = 0;
         }
 
-        public abstract Point[] GetMoves(Board board, Point myPos);
+        public abstract List<Point> GetMoves(Board board, Point myPos);
 
     }
 }
