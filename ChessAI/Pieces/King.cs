@@ -23,7 +23,7 @@ namespace ChessAI.Pieces
             {
                 for (int y = yMin; y <= yMax; y++)
                 {
-                    if(board.board[x,y]==null)
+                    if(board.BoardTab[x,y]==null)
                     {
                         list.Add(new Point(x, y));
                     }
@@ -31,12 +31,12 @@ namespace ChessAI.Pieces
             }
             if(moves==0) //king hasn't moved
             {
-                if(board.board[0, myPos.y] != null && board.board[0, myPos.y].moves == 0) //there is rook on the left, that hasn't moved
+                if(board.BoardTab[0, myPos.y] != null && board.BoardTab[0, myPos.y].moves == 0) //there is rook on the left, that hasn't moved
                 {
                     bool isEmpty = true;
                     for (int i = 1; i < myPos.x; i++) //all spots on the way are empty
                     {
-                        if (board.board[i, myPos.y] != null)
+                        if (board.BoardTab[i, myPos.y] != null)
                         {
                             isEmpty = false;
                             break;
@@ -45,12 +45,12 @@ namespace ChessAI.Pieces
                     if(isEmpty)
                         list.Add(new Point(myPos.x-2, myPos.y));
                 }
-                else if(board.board[7, myPos.y] != null && board.board[7, myPos.y].moves == 0)
+                if(board.BoardTab[7, myPos.y] != null && board.BoardTab[7, myPos.y].moves == 0)
                 {
                     bool isEmpty = true;
                     for (int i = myPos.x+1; i < 7; i++) //all spots on the way are empty
                     {
-                        if (board.board[i, myPos.y] != null)
+                        if (board.BoardTab[i, myPos.y] != null)
                         {
                             isEmpty = false;
                             break;

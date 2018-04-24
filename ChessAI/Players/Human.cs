@@ -28,13 +28,13 @@ namespace ChessAI
 		public override Point[] Decide(Board board)
 		{
 			board.Print(null);
-			Console.WriteLine("Tura nr" + board.turns + " " + (color == Color.White ? "Białych" : "Czarnych"));
+			Console.WriteLine("Tura nr" + board.Turns + " " + (color == Color.White ? "Białych" : "Czarnych"));
 			Point[] res = new Point[2];
             Piece onBoard;
 			while (true)
 			{
 				res[0] = GetPiece("Wybierz bierkę");
-				onBoard = board.board[res[0].x, res[0].y];
+				onBoard = board.BoardTab[res[0].x, res[0].y];
 				if (onBoard == null || onBoard.color != color)
 				{
 					//not your piece

@@ -8,36 +8,37 @@ namespace ChessAI
 	class Board
 	{
 		// members
-		public Piece[,] board { get; private set; }
+		public Piece[,] BoardTab { get; private set; }
 		Player whitePlayer, blackPlayer;
-		public int turns { get; private set; }
-
-		// constructors
-		public Board(Player a, Player b)
+		public int Turns { get; private set; }
+        public Point LatestMoved { get; private set; }
+        // constructors
+        public Board(Player a, Player b)
 		{
 			Console.ForegroundColor = ConsoleColor.White;
-			turns = 0;
+			Turns = 0;
+            LatestMoved = new Point(-1, -1);
 			whitePlayer = a.color == Color.White ? a : b;
 			blackPlayer = a.color != Color.White ? a : b;
-			board = new Piece[8, 8];
+			BoardTab = new Piece[8, 8];
 
-			board[0, 0] = new Rook(Color.White); board[7, 0] = new Rook(Color.White);
-			board[0, 7] = new Rook(Color.Black); board[7, 7] = new Rook(Color.Black);
+			BoardTab[0, 0] = new Rook(Color.White); BoardTab[7, 0] = new Rook(Color.White);
+			BoardTab[0, 7] = new Rook(Color.Black); BoardTab[7, 7] = new Rook(Color.Black);
 
-			board[2, 0] = new Bishop(Color.White); board[5, 0] = new Bishop(Color.White);
-			board[2, 7] = new Bishop(Color.Black); board[5, 7] = new Bishop(Color.Black);
+			BoardTab[2, 0] = new Bishop(Color.White); BoardTab[5, 0] = new Bishop(Color.White);
+			BoardTab[2, 7] = new Bishop(Color.Black); BoardTab[5, 7] = new Bishop(Color.Black);
 
-			board[1, 0] = new Knight(Color.White); board[6, 0] = new Knight(Color.White);
-			board[1, 7] = new Knight(Color.Black); board[6, 7] = new Knight(Color.Black);
+			BoardTab[1, 0] = new Knight(Color.White); BoardTab[6, 0] = new Knight(Color.White);
+			BoardTab[1, 7] = new Knight(Color.Black); BoardTab[6, 7] = new Knight(Color.Black);
 
-			board[3, 0] = new Queen(Color.White); board[3, 7] = new Queen(Color.Black);
+			BoardTab[3, 0] = new Queen(Color.White); BoardTab[3, 7] = new Queen(Color.Black);
 
-			board[4, 0] = new King(Color.White); board[4, 7] = new King(Color.Black);
+			BoardTab[4, 0] = new King(Color.White); BoardTab[4, 7] = new King(Color.Black);
 
 			for (int i = 0; i < 8; i++)
 			{
-				board[i, 1] = new Pawn(Color.White);
-				board[i, 6] = new Pawn(Color.Black);
+				BoardTab[i, 1] = new Pawn(Color.White);
+				BoardTab[i, 6] = new Pawn(Color.Black);
 			}
 		}
 
@@ -74,12 +75,12 @@ namespace ChessAI
 					//number the columns
 					else if (height == 8)
 						Console.Write((char)('a' + width));
-					else if (board[width, height] != null)
+					else if (BoardTab[width, height] != null)
 					{
-						if (board[width, height].color == Color.Black)
+						if (BoardTab[width, height].color == Color.Black)
 							Console.ForegroundColor = ConsoleColor.DarkGray;
 						//display piece
-						Console.Write(board[width, height].letter);
+						Console.Write(BoardTab[width, height].letter);
 
 					}
 					else Console.Write(' ');
@@ -100,7 +101,7 @@ namespace ChessAI
 			}
 		}
 		//Special moves: - to include in GetMoves method of Piece class
-		//en passant - described in pawn class
+		//en passant - done
 		//castling - done, but gonna need to come back to it once checking for win is done
 		//double-step move - done
 		//promotion - done
@@ -111,18 +112,20 @@ namespace ChessAI
 			//save move and update board
 
             //need to check if my king won't be in check after move(maybe in GetMoves)
-			board[move[0].x, move[0].y].moves++;
-			board[move[1].x, move[1].y] = board[move[0].x, move[0].y];
-			board[move[0].x, move[0].y] = null;
-            Piece lastMoved = board[move[1].x, move[1].y];
-            Color playerColor = lastMoved.color;
+            if(BoardTab[move[0].x, move[0].y].letter=='P' && BoardTab[move[1].x, move[1].y]==null && move[0].x!=move[1].x)
+                BoardTab[move[1].x, move[0].y] = null; //en passant
+			BoardTab[move[0].x, move[0].y].moves++;
+			BoardTab[move[1].x, move[1].y] = BoardTab[move[0].x, move[0].y];
+			BoardTab[move[0].x, move[0].y] = null;
+            Piece movedPiece = BoardTab[move[1].x, move[1].y];
+            Color playerColor = movedPiece.color;
             //castling
-            if(lastMoved.letter=='K' && Math.Abs(move[0].x-move[1].x)==2)
+            if(movedPiece.letter=='K' && Math.Abs(move[0].x-move[1].x)==2)
             {
-                Point[] newMove = new Point[2];
-                newMove[0].x = (move[1].x - move[0].x) > 0 ? 7 : 0;
-                newMove[0].y = newMove[1].y = move[1].y;
-                newMove[1].x = (move[1].x + move[0].x) / 2;
+                Point[] newMove = new Point[2] {
+                    new Point((move[1].x - move[0].x) > 0 ? 7 : 0, move[1].y),
+                    new Point((move[1].x + move[0].x) / 2, move[1].y)
+                };
                 Win w = Execute(newMove); //to rethink (when checking for win is done)
             }
             //pawn promotion
@@ -131,7 +134,7 @@ namespace ChessAI
 					||
 					(move[1].y == 0 && playerColor == Color.Black)
 				)
-				&& lastMoved.letter == 'P')
+				&& movedPiece.letter == 'P')
 			{
 				//promote this pawn
 				Console.WriteLine("Pionek doszedł do linii przemiany. Wybierz na co chcesz go promować:");
@@ -162,9 +165,11 @@ namespace ChessAI
 					if (newPiece != null)
 						break;
 				}
-                newPiece.moves = lastMoved.moves;
-				board[move[1].x, move[1].y] = newPiece;
-			}
+                newPiece.moves = movedPiece.moves;
+				BoardTab[move[1].x, move[1].y] = newPiece;
+            }
+            this.LatestMoved.x = move[1].x;
+            this.LatestMoved.y = move[1].y;
             //move history?
             //handle special moves
 
@@ -178,11 +183,11 @@ namespace ChessAI
             {
                 for (int width = 0; width < 8; width++)
                 {
-                    if (board[width, height].color == playerColor)
+                    if (BoardTab[width, height] != null && BoardTab[width, height].color == playerColor)
                     {
-                        Piece piece = board[width, height];
+                        Piece piece = BoardTab[width, height];
                         List<Point> checking = piece.GetMoves(this, new Point(width, height)).Where(
-                            x => { Piece dest = board[x.x, x.y]; return dest.color != playerColor && dest.letter == 'K'; }
+                            x => { Piece dest = BoardTab[x.x, x.y]; return dest == null ? false : (dest.color != playerColor && dest.letter == 'K'); }
                             ).ToList();
                         checingPieces.Add(piece);
                     }
@@ -218,7 +223,7 @@ namespace ChessAI
 		}
 		public Win Turn()
 		{
-			turns++;
+			Turns++;
 
 			Win win = Execute(whitePlayer.Decide(this));
 

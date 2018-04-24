@@ -21,9 +21,9 @@ namespace ChessAI.Pieces
             //null -> add, continue
             //color=mycolor -> stop
             //color!=mycolor -> add, stop
-            if (board.board[x, y] == null)
+            if (board.BoardTab[x, y] == null)
                 list.Add(new Point(x, y));
-            else if (board.board[x, y].color == color)
+            else if (board.BoardTab[x, y].color == color)
                 return false;
             else
             {

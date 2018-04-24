@@ -27,7 +27,7 @@ namespace ChessAI.Pieces
                 //end magic
                 if (myPos.x + x < 8 && myPos.x + x >= 0 
                         && myPos.y + y < 8 && myPos.y + y >= 0
-                        && (board.board[myPos.x + x, myPos.y+y]==null || board.board[myPos.x + x, myPos.y + y].color!=color))
+                        && (board.BoardTab[myPos.x + x, myPos.y+y]==null || board.BoardTab[myPos.x + x, myPos.y + y].color!=color))
                     list.Add(new Point(myPos.x + x, myPos.y + y));
             }
             return list;
