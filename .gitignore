@@ -23,15 +23,3 @@ S junk files
 *.sbr
 *.sdf
 *.csproj*
-*.sln
-ipch/
-obj/
-.vs/
-[Bb]in
-[Dd]ebug*/
-[Rr]elease*/
-Ankh.NoLoad
-
-#Project files
-[Bb]uild/
-
