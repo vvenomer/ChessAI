@@ -23,3 +23,7 @@ S junk files
 *.sbr
 *.sdf
 *.csproj*
+bin/
+obj/
+*.sln
+.vs/
