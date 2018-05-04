@@ -30,7 +30,8 @@ namespace ChessAI
 			Console.ForegroundColor = ConsoleColor.White;
 			Turns = 0;
             history = new Stack<Move>();
-			whitePlayer = a.color == Color.White ? a : b;
+            deletedPieces = new Stack<Piece>();
+            whitePlayer = a.color == Color.White ? a : b;
 			blackPlayer = a.color != Color.White ? a : b;
 			BoardTab = new Piece[8, 8];
 

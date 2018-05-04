@@ -7,7 +7,6 @@ namespace ChessAI
 {
 	class Human : Player
 	{
-        private bool quit = false;
 		public Human(Color color) : base(color) { }
 		private Point GetPiece(string message)
 		{
