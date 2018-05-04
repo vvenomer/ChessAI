@@ -36,7 +36,8 @@ namespace ChessAI
 			Console.WriteLine("Tura nr" + board.Turns + " " + (color == Color.White ? "Białych" : "Czarnych"));
 			Point[] res = new Point[2];
 			Piece onBoard;
-			Point[] moves;
+			Point[] availableMoves;
+
 			while (true)
 			{
 				res[0] = GetPiece("Wybierz bierkę");
@@ -49,26 +50,26 @@ namespace ChessAI
 				}
 				else
 				{
-					moves = onBoard.GetValidMoves(board, res[0]).ToArray();
-					if (moves.Length == 0)
+					availableMoves = onBoard.GetValidMoves(board, res[0]).ToArray();
+					if (availableMoves.Length == 0)
 					{
 						Console.WriteLine("Ta bierka nie ma dostępnych ruchów, wybierz inną");
 					}
 					else break;
 				}
 			}
-			board.Print(moves);
+			board.Print(availableMoves);
 			while (true)
 			{
 				Console.WriteLine("Wybrano bierkę: " + (char)('a' + res[0].x) + (8 - res[0].y).ToString());
 				Console.WriteLine("Dostępne ruchy");
-				foreach (Point move in moves)
+				foreach (Point move in availableMoves)
 				{
 					Console.Write((char)('a' + move.x) + (8 - move.y).ToString() + " ");
 				}
 				Console.WriteLine();
 				res[1] = GetPiece("Ustaw wybraną bierkę");
-				if (!Array.Exists(moves, x => x.x == res[1].x && x.y == res[1].y))
+				if (!Array.Exists(availableMoves, x => x.x == res[1].x && x.y == res[1].y))
 				{
 					Console.WriteLine("Nie możesz wykonać takiego ruchu");
 				}
