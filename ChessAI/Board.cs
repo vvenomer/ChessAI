@@ -354,5 +354,21 @@ namespace ChessAI
 					return false;
 			}
 		}
+		public void PrintMatchResult()
+		{
+			Console.Write("Game Result: ");
+			switch (MatchResult)
+			{
+				case Win.Black:
+					Console.WriteLine("Black player has won");
+					break;
+				case Win.White:
+					Console.WriteLine("White player has won");
+					break;
+				case Win.Stalemate:
+					Console.WriteLine("Stalemate");
+					break;
+			}
+		}
 	}
 }
