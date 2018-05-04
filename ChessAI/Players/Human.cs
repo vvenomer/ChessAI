@@ -34,15 +34,15 @@ namespace ChessAI
 		{
 			board.Print(null);
 			Console.WriteLine("Tura nr" + board.Turns + " " + (color == Color.White ? "Białych" : "Czarnych"));
-			Point[] res = new Point[2];
+			Point[] playerChoice = new Point[2];
 			Piece onBoard;
 			Point[] availableMoves;
 
 			while (true)
 			{
-				res[0] = GetPiece("Wybierz bierkę");
+				playerChoice[0] = GetPiece("Wybierz bierkę");
 
-				onBoard = board.BoardTab[res[0].x, res[0].y];
+				onBoard = board.BoardTab[playerChoice[0].x, playerChoice[0].y];
 				if (onBoard == null || onBoard.color != color)
 				{
 					//not your piece
@@ -50,7 +50,7 @@ namespace ChessAI
 				}
 				else
 				{
-					availableMoves = onBoard.GetValidMoves(board, res[0]).ToArray();
+					availableMoves = onBoard.GetValidMoves(board, playerChoice[0]).ToArray();
 					if (availableMoves.Length == 0)
 					{
 						Console.WriteLine("Ta bierka nie ma dostępnych ruchów, wybierz inną");
@@ -61,21 +61,21 @@ namespace ChessAI
 			board.Print(availableMoves);
 			while (true)
 			{
-				Console.WriteLine("Wybrano bierkę: " + (char)('a' + res[0].x) + (8 - res[0].y).ToString());
+				Console.WriteLine("Wybrano bierkę: " + (char)('a' + playerChoice[0].x) + (8 - playerChoice[0].y).ToString());
 				Console.WriteLine("Dostępne ruchy");
 				foreach (Point move in availableMoves)
 				{
 					Console.Write((char)('a' + move.x) + (8 - move.y).ToString() + " ");
 				}
 				Console.WriteLine();
-				res[1] = GetPiece("Ustaw wybraną bierkę");
-				if (!Array.Exists(availableMoves, x => x.x == res[1].x && x.y == res[1].y))
+				playerChoice[1] = GetPiece("Ustaw wybraną bierkę");
+				if (!Array.Exists(availableMoves, x => x.x == playerChoice[1].x && x.y == playerChoice[1].y))
 				{
 					Console.WriteLine("Nie możesz wykonać takiego ruchu");
 				}
 				else break;
 			}
-			return res;
+			return playerChoice;
 		}
 	}
 }
