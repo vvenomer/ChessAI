@@ -115,6 +115,13 @@ namespace ChessAI
 		}
         public List<Point> PiecesCheckingKing(Color color, bool breakOnFound = false)
         {
+            //possible optimalization:
+            //1
+            //start searching from top for white player and from bottom player
+            //stop searching when found nr of pieces they have (maybe keep nr of them somewhere)
+            //2
+            //save result
+            //next time start searching from pieces that where checking
             List<Point> checingPieces = new List<Point>();
             for (int height = 0; height < 8; height++)
             {
@@ -137,11 +144,7 @@ namespace ChessAI
             }
             return checingPieces;
         }
-		//Special moves: - to include in GetMoves method of Piece class
-		//en passant - done
-		//castling - done, but gonna need to come back to it once checking for win is done
-		//double-step move - done
-		//promotion - done
+
         public void UndoMove(int nrOfMoves)
         {
             if (nrOfMoves <= 0 || history.Count == 0) return;
@@ -190,11 +193,41 @@ namespace ChessAI
             reversed.moves--;
             UndoMove(nrOfMoves - 1);
         }
-		private void Execute(Point[] move)
-		{
+
+        public Win UpdateGameState(Color playerColor)
+        {
+            //check for checkmate/stalemate and other draw options
+
+            bool isEnemyChecked = PiecesCheckingKing(playerColor == Color.Black ? Color.White : Color.Black, true).Count != 0;
+
+            if (!isEnemyChecked)
+            {
+                GameState = Win.None;
+            }
+            else
+            {
+                bool stoppedCheck = false;
+                for(int height = 0; height < 8;height++)
+                {
+                    for(int width = 0; width<8;width++)
+                    {
+                        if (BoardTab[width,height]!=null && BoardTab[width, height].color!=playerColor)
+                        {
+                            stoppedCheck = BoardTab[width, height].GetValidMoves(this, new Point(width, height)).Count != 0;
+                        }
+                    }
+                }
+                if (stoppedCheck)
+                    GameState = playerColor == Color.Black ? Win.BlackCheck : Win.WhiteCheck;
+                else GameState = playerColor == Color.Black ? Win.Black : Win.White;
+            }
+            //stalemate?
+            return GameState;
+        }
+        public void Execute(Point[] move)
+        {
             //save move and update board
             Move moveToSave = new Move();
-            //need to check if my king won't be in check after move(maybe in GetMoves)
             if (BoardTab[move[0].x, move[0].y].letter == 'P' && BoardTab[move[1].x, move[1].y] == null && move[0].x != move[1].x)
             {
                 moveToSave.hasEnPassanted = true;
@@ -203,7 +236,7 @@ namespace ChessAI
             }
             else moveToSave.hasTaken = moveToSave.hasEnPassanted = false;
 
-			BoardTab[move[0].x, move[0].y].moves++;
+            BoardTab[move[0].x, move[0].y].moves++;
 
             if (BoardTab[move[1].x, move[1].y] != null)
             {
@@ -211,8 +244,8 @@ namespace ChessAI
                 deletedPieces.Push(BoardTab[move[1].x, move[1].y]);
             }
             else moveToSave.hasTaken = false;
-			BoardTab[move[1].x, move[1].y] = BoardTab[move[0].x, move[0].y];
-			BoardTab[move[0].x, move[0].y] = null;
+            BoardTab[move[1].x, move[1].y] = BoardTab[move[0].x, move[0].y];
+            BoardTab[move[0].x, move[0].y] = null;
             Piece movedPiece = BoardTab[move[1].x, move[1].y];
             Color playerColor = movedPiece.color;
             //castling
@@ -225,14 +258,9 @@ namespace ChessAI
                 Execute(newMove); //to rethink (when checking for win is done)
             }
             //pawn promotion
-            if ((
-                    (move[1].y == 7 && playerColor == Color.White)
-                    ||
-                    (move[1].y == 0 && playerColor == Color.Black)
-                )
+            if (((move[1].y == 7 && playerColor == Color.White) || (move[1].y == 0 && playerColor == Color.Black))
                 && movedPiece.letter == 'P')
             {
-                //promote this pawn
                 moveToSave.hasPromoted = true;
                 Console.WriteLine("Pionek doszedł do linii przemiany. Wybierz na co chcesz go promować:");
                 Console.WriteLine("Q - hetman, N - goniec, R - wieża, B - skoczek");
@@ -269,39 +297,7 @@ namespace ChessAI
             moveToSave.from = move[0];
             moveToSave.to = move[1];
             history.Push(moveToSave);
-
-            //check for checkmate/stalemate and other draw options
-
-            //possible optimalization:
-            //start searching from top for white player and from bottom player
-            //stop searching when found nr of pieces they have (maybe keep nr of them somewhere)
-            bool isEnemyChecked = PiecesCheckingKing(playerColor==Color.Black ? Color.White : Color.Black, true).Count!=0;
-
-            if (!isEnemyChecked)
-            {
-                GameState = Win.None;
-                return;
-            }
-            else
-            {
-                //pseudo code to differentiate between check and checkmate
-                //simulate each possible opponent move, then run checking for check again
-                //if check stopped - cool
-                //else continue checking
-                //nothing stopped it - checkmate
-                //^ optimalization - checking for check can be started with peices that were checking it before,
-                //but the rest should be checked too in case:
-                //B Q|
-                //Br | player color differentiated by upper/lower case letters
-                //  k| can't move rook to the left, because bishop will be able to hit king
-                //---* so that needs to be detected as check mate
-
-                if (true) //temp - should be: can opponent block, which is kinda hard as described above
-                    GameState = playerColor == Color.Black ? Win.BlackCheck : Win.WhiteCheck;
-                else GameState = playerColor == Color.Black ? Win.Black : Win.White;
-            }
-            //stalemate?
-		}
+        }
 		public int Evaluate()
 		{
 			//tells in how good position player is
@@ -313,6 +309,7 @@ namespace ChessAI
             try
             {
                 Execute(whitePlayer.Decide(this));
+                UpdateGameState(Color.White);
                 if (GameState == Win.White || GameState == Win.Stalemate)
                     return GameState;
             }
@@ -326,9 +323,11 @@ namespace ChessAI
                 Turns--;
                 UndoMove(1);
             }
+
 			try
             {
                 Execute(blackPlayer.Decide(this));
+                UpdateGameState(Color.Black);
             }
             catch (QuitException)
             {
