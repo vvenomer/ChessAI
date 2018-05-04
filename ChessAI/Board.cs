@@ -22,7 +22,6 @@ namespace ChessAI
 		public int Turns { get; private set; }
 		public Point LatestMoved { get { return history.Count != 0 ? history.Peek().to : null; } }
 		public Win GameState { get; private set; }
-		public Win MatchResult { get; }
 		private Stack<Move> history;
 		private Stack<Piece> deletedPieces;
 
@@ -344,7 +343,7 @@ namespace ChessAI
 		}
 		public bool MatchEnded()
 		{
-			switch (MatchResult)
+			switch (GameState)
 			{
 				case Win.Black:
 				case Win.White:
@@ -357,7 +356,7 @@ namespace ChessAI
 		public void PrintMatchResult()
 		{
 			Console.Write("Game Result: ");
-			switch (MatchResult)
+			switch (GameState)
 			{
 				case Win.Black:
 					Console.WriteLine("Black player has won");
