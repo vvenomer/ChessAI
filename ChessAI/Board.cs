@@ -368,6 +368,7 @@ namespace ChessAI
 					Console.WriteLine("Stalemate");
 					break;
 			}
+			Console.Read();
 		}
 	}
 }
