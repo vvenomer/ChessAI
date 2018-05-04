@@ -338,6 +338,7 @@ namespace ChessAI
             {
                 Turns--;
                 UndoMove(1);
+
             }
             return GameState;
 		}
