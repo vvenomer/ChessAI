@@ -370,9 +370,9 @@ namespace ChessAI
 			}
 			Console.Read();
 		}
-		public List<Piece> GetAllPieces(Color playerColor)
+		public List<Point> GetAllPiecesPositions(Color playerColor)
 		{
-			var list = new List<Piece>();
+			var list = new List<Point>();
 			for (int i = 0; i < 8; i++)
 			{
 				for (int j = 0; j < 8; j++)
@@ -381,11 +381,23 @@ namespace ChessAI
 						continue;
 					if (BoardTab[i, j].color == playerColor)
 					{
-						list.Add(BoardTab[i, j]);
+						list.Add(new Point(i, j));
 					}
 				}
 			}
 			return list;
+		}
+		public bool hasAnyValidMoves(Color playerColor)
+		{
+			List<Point> listOfPieces = GetAllPiecesPositions(playerColor);
+			List<Point> validMoves;
+			foreach (var piece in listOfPieces)
+			{
+				validMoves = BoardTab[piece.x, piece.y].GetValidMoves(this, piece);
+				if (validMoves.Count != 0)
+					return true;
+			}
+			return false;
 		}
 	}
 }
