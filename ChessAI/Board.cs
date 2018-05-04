@@ -22,6 +22,7 @@ namespace ChessAI
 		public int Turns { get; private set; }
 		public Point LatestMoved { get { return history.Count != 0 ? history.Peek().to : null; } }
 		public Win GameState { get; private set; }
+		public Win MatchResult { get; }
 		private Stack<Move> history;
 		private Stack<Piece> deletedPieces;
 
@@ -145,7 +146,6 @@ namespace ChessAI
 			}
 			return checingPieces;
 		}
-
 		public void UndoMove(int nrOfMoves)
 		{
 			if (nrOfMoves <= 0 || history.Count == 0) return;
@@ -194,7 +194,6 @@ namespace ChessAI
 			reversed.moves--;
 			UndoMove(nrOfMoves - 1);
 		}
-
 		public Win UpdateGameState(Color playerColor)
 		{
 			//check for checkmate/stalemate and other draw options
@@ -342,6 +341,18 @@ namespace ChessAI
 
 			}
 			return GameState;
+		}
+		public bool MatchEnded()
+		{
+			switch (MatchResult)
+			{
+				case Win.Black:
+				case Win.White:
+				case Win.Stalemate:
+					return true;
+				default:
+					return false;
+			}
 		}
 	}
 }
