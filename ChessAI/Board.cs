@@ -302,7 +302,7 @@ namespace ChessAI
 			//tells in how good position player is
 			throw new NotImplementedException();
 		}
-		public Win Turn()
+		public Win ExecuteTurn()
 		{
 			Turns++;
 			try

@@ -12,7 +12,7 @@ namespace ChessAI
 
 			do
 			{
-				board.Turn();
+				board.ExecuteTurn();
 			} while (!board.MatchEnded());
 
 			Console.Clear();
