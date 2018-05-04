@@ -4,15 +4,15 @@ using System.Text;
 
 namespace ChessAI
 {
-    abstract class Player
-    {
-        public Color color;
+	abstract class Player
+	{
+		public Color color;
 
-        protected Player(Color color)
-        {
-            this.color = color;
-        }
+		protected Player(Color color)
+		{
+			this.color = color;
+		}
 
-        public abstract Point[] Decide(Board board);
-    }
+		public abstract Point[] Decide(Board board);
+	}
 }

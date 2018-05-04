@@ -4,15 +4,15 @@ using System.Text;
 
 namespace ChessAI
 {
-    class AlphaBeta : Player
-    {
-        public AlphaBeta(Color color) : base(color)
-        {
-        }
+	class AlphaBeta : Player
+	{
+		public AlphaBeta(Color color) : base(color)
+		{
+		}
 
-        public override Point[] Decide(Board board)
-        {
-            throw new NotImplementedException();
-        }
-    }
+		public override Point[] Decide(Board board)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }
