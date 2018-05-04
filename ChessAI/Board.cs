@@ -220,7 +220,11 @@ namespace ChessAI
 					GameState = playerColor == Color.Black ? Win.BlackCheck : Win.WhiteCheck;
 				else GameState = playerColor == Color.Black ? Win.Black : Win.White;
 			}
-			//stalemate?
+			//stalemate
+			if (GameState == Win.None && !hasAnyValidMoves(playerColor))
+			{
+				GameState = Win.Stalemate;
+			}
 			return GameState;
 		}
 		public void Execute(Point[] move)
