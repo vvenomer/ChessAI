@@ -297,7 +297,7 @@ namespace ChessAI
 			moveToSave.to = move[1];
 			history.Push(moveToSave);
 		}
-		public int Evaluate()
+		public int EvaluatePlayerPosition()
 		{
 			//tells in how good position player is
 			throw new NotImplementedException();
