@@ -12,9 +12,26 @@ namespace ChessAI
             Win playerWon;
             do
             {
-                playerWon = board.Turn();
-            } while (playerWon != Win.Black || playerWon != Win.White || playerWon != Win.Stalemate);
-            Console.ReadKey();
+                board.Turn();
+                playerWon = board.GameState;
+                //or
+                //playerWon = board.Turn();
+            } while (playerWon != Win.Black && playerWon != Win.White && playerWon != Win.Stalemate);
+            Console.Clear();
+            Console.Write("Game Result: ");
+            switch(playerWon)
+            {
+                case Win.Black:
+                    Console.WriteLine("Blak player has won");
+                    break;
+                case Win.White:
+                    Console.WriteLine("White player has won");
+                    break;
+                case Win.Stalemate:
+                    Console.WriteLine("Stalemate");
+                    break;
+            }
+
         }
     }
 }

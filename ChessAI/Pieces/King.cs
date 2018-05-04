@@ -60,8 +60,6 @@ namespace ChessAI.Pieces
                         list.Add(new Point(myPos.x + 2, myPos.y));
                 }
             }
-            //special moves
-            //... castling
             return list;
         }
     }

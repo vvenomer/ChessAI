@@ -7,6 +7,7 @@ namespace ChessAI
 {
 	class Human : Player
 	{
+        private bool quit = false;
 		public Human(Color color) : base(color) { }
 		private Point GetPiece(string message)
 		{
@@ -15,11 +16,16 @@ namespace ChessAI
 			{
 				Console.WriteLine(message);
 				piece = Console.ReadLine();
-				if (piece.Length < 2 || piece[0] < 'a' || piece[0] > 'h' || piece[1] < '0' || piece[1] > '9')
-				{
-					Console.WriteLine("Złe polecenie");
-					continue;
-				}
+
+                if (piece.Equals("-q"))
+                    throw new QuitException();
+                else if (piece.Equals("-r"))
+                    throw new ReverseException();
+                else if (piece.Length < 2 || piece[0] < 'a' || piece[0] > 'h' || piece[1] < '0' || piece[1] > '9')
+                {
+                    Console.WriteLine("Złe polecenie");
+                    continue;
+                }
 				break;
 			}
             return new Point(piece[0] - 'a', 8 - (piece[1] - '0'));
@@ -33,7 +39,14 @@ namespace ChessAI
             Piece onBoard;
 			while (true)
 			{
-				res[0] = GetPiece("Wybierz bierkę");
+                res[0] = GetPiece("Wybierz bierkę");
+                if(res[0].x==-1)
+                {
+                    if (res[0].y == 0)
+                        throw new Exception();
+                    else if (res[0].y == 1)
+                        board.UndoMove(color==Color.White ? 3 : 4);
+                }
 				onBoard = board.BoardTab[res[0].x, res[0].y];
 				if (onBoard == null || onBoard.color != color)
 				{

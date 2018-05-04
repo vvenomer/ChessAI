@@ -7,17 +7,29 @@ namespace ChessAI
 {
 	class Board
 	{
+        struct Move
+        {
+            public Point from;
+            public Point to;
+            public bool hasTaken;
+            public bool hasPromoted;
+            public bool hasEnPassanted;
+        };
 		// members
 		public Piece[,] BoardTab { get; private set; }
 		Player whitePlayer, blackPlayer;
 		public int Turns { get; private set; }
-        public Point LatestMoved { get; private set; }
+        public Point LatestMoved { get { return history.Count != 0 ? history.Peek().to : null; } }
+        public Win GameState { get; private set; }
+
+        private Stack<Move> history;
+        private Stack<Piece> deletedPieces;
         // constructors
         public Board(Player a, Player b)
 		{
 			Console.ForegroundColor = ConsoleColor.White;
 			Turns = 0;
-            LatestMoved = new Point(-1, -1);
+            history = new Stack<Move>();
 			whitePlayer = a.color == Color.White ? a : b;
 			blackPlayer = a.color != Color.White ? a : b;
 			BoardTab = new Piece[8, 8];
@@ -100,102 +112,175 @@ namespace ChessAI
 				}
 			}
 		}
+        public List<Point> PiecesCheckingKing(Color color, bool breakOnFound = false)
+        {
+            List<Point> checingPieces = new List<Point>();
+            for (int height = 0; height < 8; height++)
+            {
+                for (int width = 0; width < 8; width++)
+                {
+                    if (BoardTab[width, height] != null && BoardTab[width, height].color != color)
+                    {
+                        Piece piece = BoardTab[width, height];
+                        bool isChecking = piece.GetMoves(this, new Point(width, height)).Where(
+                            x => { Piece dest = BoardTab[x.x, x.y]; return dest == null ? false : (dest.color == color && dest.letter == 'K'); }
+                            ).Count() != 0;
+                        if (isChecking)
+                        {
+                            checingPieces.Add(new Point(width, height));
+                            if (breakOnFound)
+                                return checingPieces;
+                        }
+                    }
+                }
+            }
+            return checingPieces;
+        }
 		//Special moves: - to include in GetMoves method of Piece class
 		//en passant - done
 		//castling - done, but gonna need to come back to it once checking for win is done
 		//double-step move - done
 		//promotion - done
-
-		//toggleable special moves?
-		private Win Execute(Point[] move)
+        public void UndoMove(int nrOfMoves)
+        {
+            if (nrOfMoves <= 0 || history.Count == 0) return;
+            Move move = history.Pop();
+            //reverse piece position
+            Piece reversed = BoardTab[move.from.x, move.from.y] = BoardTab[move.to.x, move.to.y];
+            BoardTab[move.to.x, move.to.y] = null;
+            Color enemyColor = reversed.color == Color.Black ? Color.White : Color.Black;
+            if (move.hasTaken)
+            {
+                if(move.hasEnPassanted)
+                {
+                    //put pawn back in place
+                    BoardTab[move.to.x, move.from.y] = new Pawn(enemyColor)
+                    {
+                        moves = 1
+                    };
+                }
+                else
+                {
+                    //put piece back
+                    BoardTab[move.to.x, move.to.y] = deletedPieces.Pop();
+                }
+            }
+            else if(BoardTab[move.from.x, move.from.y].letter =='K')
+            {
+                //check for castling
+                if(move.to.x-move.from.x == 2)
+                {
+                    //castled right
+                    BoardTab[7, move.to.y] = BoardTab[move.to.x - 1, move.to.y];
+                    BoardTab[move.to.x - 1, move.to.y] = null;
+                }
+                else if(move.to.x-move.from.x == -2)
+                {
+                    //castled left
+                    BoardTab[0, move.to.y] = BoardTab[move.to.x + 1, move.to.y];
+                    BoardTab[move.to.x + 1, move.to.y] = null;
+                }
+            }
+            if(move.hasPromoted)
+            {
+                //change back to pawn
+                BoardTab[move.from.x, move.from.y] = new Pawn(reversed.color);
+            }
+            reversed.moves--;
+            UndoMove(nrOfMoves - 1);
+        }
+		private void Execute(Point[] move)
 		{
-			//save move and update board
-
+            //save move and update board
+            Move moveToSave = new Move();
             //need to check if my king won't be in check after move(maybe in GetMoves)
-            if(BoardTab[move[0].x, move[0].y].letter=='P' && BoardTab[move[1].x, move[1].y]==null && move[0].x!=move[1].x)
+            if (BoardTab[move[0].x, move[0].y].letter == 'P' && BoardTab[move[1].x, move[1].y] == null && move[0].x != move[1].x)
+            {
+                moveToSave.hasEnPassanted = true;
+                moveToSave.hasTaken = true;
                 BoardTab[move[1].x, move[0].y] = null; //en passant
+            }
+            else moveToSave.hasTaken = moveToSave.hasEnPassanted = false;
+
 			BoardTab[move[0].x, move[0].y].moves++;
+
+            if (BoardTab[move[1].x, move[1].y] != null)
+            {
+                moveToSave.hasTaken = true;
+                deletedPieces.Push(BoardTab[move[1].x, move[1].y]);
+            }
+            else moveToSave.hasTaken = false;
 			BoardTab[move[1].x, move[1].y] = BoardTab[move[0].x, move[0].y];
 			BoardTab[move[0].x, move[0].y] = null;
             Piece movedPiece = BoardTab[move[1].x, move[1].y];
             Color playerColor = movedPiece.color;
             //castling
-            if(movedPiece.letter=='K' && Math.Abs(move[0].x-move[1].x)==2)
+            if (movedPiece.letter == 'K' && Math.Abs(move[0].x - move[1].x) == 2)
             {
                 Point[] newMove = new Point[2] {
                     new Point((move[1].x - move[0].x) > 0 ? 7 : 0, move[1].y),
                     new Point((move[1].x + move[0].x) / 2, move[1].y)
                 };
-                Win w = Execute(newMove); //to rethink (when checking for win is done)
+                Execute(newMove); //to rethink (when checking for win is done)
             }
             //pawn promotion
             if ((
-					(move[1].y == 7 && playerColor == Color.White)
-					||
-					(move[1].y == 0 && playerColor == Color.Black)
-				)
-				&& movedPiece.letter == 'P')
-			{
-				//promote this pawn
-				Console.WriteLine("Pionek doszedł do linii przemiany. Wybierz na co chcesz go promować:");
-				Console.WriteLine("Q - hetman, N - goniec, R - wieża, B - skoczek");
-				string figure;
-				Piece newPiece = null;
-				while (true)
-				{
-					figure = Console.ReadLine();
-					if (figure.Length != 1) continue;
-					switch (figure[0])
-					{
-						case 'Q':
-							newPiece = new Queen(playerColor);
-							break;
-						case 'N':
+                    (move[1].y == 7 && playerColor == Color.White)
+                    ||
+                    (move[1].y == 0 && playerColor == Color.Black)
+                )
+                && movedPiece.letter == 'P')
+            {
+                //promote this pawn
+                moveToSave.hasPromoted = true;
+                Console.WriteLine("Pionek doszedł do linii przemiany. Wybierz na co chcesz go promować:");
+                Console.WriteLine("Q - hetman, N - goniec, R - wieża, B - skoczek");
+                string figure;
+                Piece newPiece = null;
+                while (true)
+                {
+                    figure = Console.ReadLine();
+                    if (figure.Length != 1) continue;
+                    switch (figure[0])
+                    {
+                        case 'Q':
+                            newPiece = new Queen(playerColor);
+                            break;
+                        case 'N':
                             newPiece = new Knight(playerColor);
-							break;
-						case 'R':
-							newPiece = new Rook(playerColor);
-							break;
-						case 'B':
-							newPiece = new Bishop(playerColor);
-							break;
-						default:
-							continue;
-					}
-					if (newPiece != null)
-						break;
-				}
+                            break;
+                        case 'R':
+                            newPiece = new Rook(playerColor);
+                            break;
+                        case 'B':
+                            newPiece = new Bishop(playerColor);
+                            break;
+                        default:
+                            continue;
+                    }
+                    if (newPiece != null)
+                        break;
+                }
                 newPiece.moves = movedPiece.moves;
-				BoardTab[move[1].x, move[1].y] = newPiece;
+                BoardTab[move[1].x, move[1].y] = newPiece;
             }
-            this.LatestMoved.x = move[1].x;
-            this.LatestMoved.y = move[1].y;
-            //move history?
-            //handle special moves
+            else moveToSave.hasPromoted = false;
+            moveToSave.from = move[0];
+            moveToSave.to = move[1];
+            history.Push(moveToSave);
 
             //check for checkmate/stalemate and other draw options
 
             //possible optimalization:
             //start searching from top for white player and from bottom player
             //stop searching when found nr of pieces they have (maybe keep nr of them somewhere)
-            List<Piece> checingPieces = new List<Piece>();
-            for (int height = 0; height < 8; height++)
-            {
-                for (int width = 0; width < 8; width++)
-                {
-                    if (BoardTab[width, height] != null && BoardTab[width, height].color == playerColor)
-                    {
-                        Piece piece = BoardTab[width, height];
-                        List<Point> checking = piece.GetMoves(this, new Point(width, height)).Where(
-                            x => { Piece dest = BoardTab[x.x, x.y]; return dest == null ? false : (dest.color != playerColor && dest.letter == 'K'); }
-                            ).ToList();
-                        checingPieces.Add(piece);
-                    }
-                }
-            }
+            bool isEnemyChecked = PiecesCheckingKing(playerColor==Color.Black ? Color.White : Color.Black, true).Count!=0;
 
-            if (checingPieces.Count == 0)
-                return Win.None;
+            if (!isEnemyChecked)
+            {
+                GameState = Win.None;
+                return;
+            }
             else
             {
                 //pseudo code to differentiate between check and checkmate
@@ -211,8 +296,8 @@ namespace ChessAI
                 //---* so that needs to be detected as check mate
 
                 if (true) //temp - should be: can opponent block, which is kinda hard as described above
-                    return playerColor==Color.Black ? Win.BlackCheck : Win.WhiteCheck;
-                else return playerColor==Color.Black? Win.Black : Win.White;
+                    GameState = playerColor == Color.Black ? Win.BlackCheck : Win.WhiteCheck;
+                else GameState = playerColor == Color.Black ? Win.Black : Win.White;
             }
             //stalemate?
 		}
@@ -224,13 +309,37 @@ namespace ChessAI
 		public Win Turn()
 		{
 			Turns++;
-
-			Win win = Execute(whitePlayer.Decide(this));
-
-			if (win == Win.White  || win == Win.Stalemate)
-				return win;
-			win = Execute(blackPlayer.Decide(this));
-			return win;
+            try
+            {
+                Execute(whitePlayer.Decide(this));
+                if (GameState == Win.White || GameState == Win.Stalemate)
+                    return GameState;
+            }
+            catch (QuitException)
+            {
+                GameState = Win.Black;
+                return GameState;
+            }
+            catch(ReverseException)
+            {
+                Turns--;
+                UndoMove(1);
+            }
+			try
+            {
+                Execute(blackPlayer.Decide(this));
+            }
+            catch (QuitException)
+            {
+                GameState = Win.White;
+                return GameState;
+            }
+            catch(ReverseException)
+            {
+                Turns--;
+                UndoMove(1);
+            }
+            return GameState;
 		}
 	}
 }

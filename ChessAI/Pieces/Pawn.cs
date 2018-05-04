@@ -38,7 +38,7 @@ namespace ChessAI.Pieces
                     list.Add(new Point(myPos.x + 1, myPos.y + way));
             }
             //en passant
-            if (board.LatestMoved.x < 0) //nothing moved yet
+            if (board.LatestMoved == null) //nothing moved yet
                 return list;
             Piece latestMoved = board.BoardTab[board.LatestMoved.x, board.LatestMoved.y];
             if (latestMoved.letter == 'P' && //pawn

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChessAI.Pieces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -21,6 +22,15 @@ namespace ChessAI
             moves = 0;
         }
 
+        public List<Point> ValidateMove(Board board, Point myPos, List<Point> possibleMoves)
+        {
+            foreach (Point move in possibleMoves)
+            {
+                if (false/*move would cause check*/)
+                    possibleMoves.Remove(move);
+            }
+            return possibleMoves;
+        }
         public abstract List<Point> GetMoves(Board board, Point myPos);
 
     }
