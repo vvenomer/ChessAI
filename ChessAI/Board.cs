@@ -370,5 +370,22 @@ namespace ChessAI
 			}
 			Console.Read();
 		}
+		public List<Piece> GetAllPieces(Color playerColor)
+		{
+			var list = new List<Piece>();
+			for (int i = 0; i < 8; i++)
+			{
+				for (int j = 0; j < 8; j++)
+				{
+					if (BoardTab[i, j] == null)
+						continue;
+					if (BoardTab[i, j].color == playerColor)
+					{
+						list.Add(BoardTab[i, j]);
+					}
+				}
+			}
+			return list;
+		}
 	}
 }
