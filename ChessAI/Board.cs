@@ -260,43 +260,14 @@ namespace ChessAI
 				};
 				Execute(newMove); //to rethink (when checking for win is done)
 			}
-			//pawn promotion
-			if (((move[1].y == 7 && playerColor == Color.White) || (move[1].y == 0 && playerColor == Color.Black))
-				&& movedPiece.letter == 'P')
-			{
-				moveToSave.hasPromoted = true;
-				Console.WriteLine("Pionek doszedł do linii przemiany. Wybierz na co chcesz go promować:");
-				Console.WriteLine("Q - hetman, N - goniec, R - wieża, B - skoczek");
-				string figure;
-				Piece newPiece = null;
-				while (true)
-				{
-					figure = Console.ReadLine();
-					if (figure.Length != 1) continue;
-					switch (figure[0])
-					{
-						case 'Q':
-							newPiece = new Queen(playerColor);
-							break;
-						case 'N':
-							newPiece = new Knight(playerColor);
-							break;
-						case 'R':
-							newPiece = new Rook(playerColor);
-							break;
-						case 'B':
-							newPiece = new Bishop(playerColor);
-							break;
-						default:
-							continue;
-					}
-					if (newPiece != null)
-						break;
-				}
-				newPiece.moves = movedPiece.moves;
-				BoardTab[move[1].x, move[1].y] = newPiece;
-			}
-			else moveToSave.hasPromoted = false;
+            //pawn promotion
+            if (((move[1].y == 7 && playerColor == Color.White) || (move[1].y == 0 && playerColor == Color.Black))
+                && movedPiece.letter == 'P')
+            {
+                moveToSave.hasPromoted = true;
+                BoardTab[move[1].x, move[1].y] = ((Pawn)BoardTab[move[1].x, move[1].y]).Promote();
+            }
+            else moveToSave.hasPromoted = false;
 			moveToSave.from = move[0];
 			moveToSave.to = move[1];
 			history.Push(moveToSave);
