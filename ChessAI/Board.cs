@@ -18,21 +18,24 @@ namespace ChessAI
 
 		// members
 		public Piece[,] BoardTab { get; private set; }
-		Player whitePlayer, blackPlayer;
-        double fiftyMoveRule;
-        public bool CanDraw { get { return fiftyMoveRule >= 50; } } 
+		private Player whitePlayer, blackPlayer;
+        private double fiftyMoveRule;
+        private bool threeholdRepetition;
+        public bool CanDraw { get { return fiftyMoveRule >= 50 || threeholdRepetition; } } 
 		public int Turns { get; private set; }
 		public Point LatestMoved { get { return history.Count != 0 ? history.Peek().to : null; } }
 		public Win GameState { get; private set; }
 		private Stack<Move> history;
 		private Stack<Piece> deletedPieces;
-
-		// constructors
-		public Board(Player a, Player b)
+        private Queue<double> whiteEvals;
+        private Queue<double> blackEvals;
+        // constructors
+        public Board(Player a, Player b)
 		{
 			Console.ForegroundColor = ConsoleColor.White;
 			Turns = 0;
             fiftyMoveRule = 0;
+            threeholdRepetition = false;
 			history = new Stack<Move>();
 			deletedPieces = new Stack<Piece>();
 			whitePlayer = a.color == Color.White ? a : b;
@@ -231,7 +234,9 @@ namespace ChessAI
 			if (BoardTab[move[1].x, move[1].y] != null)
 			{
 				moveToSave.hasTaken = true;
-				deletedPieces.Push(BoardTab[move[1].x, move[1].y]);
+                whiteEvals.Clear();
+                blackEvals.Clear();
+                deletedPieces.Push(BoardTab[move[1].x, move[1].y]);
 			}
 			else moveToSave.hasTaken = false;
 
@@ -263,7 +268,7 @@ namespace ChessAI
 			moveToSave.to = move[1];
 			history.Push(moveToSave);
 		}
-		public int EvaluatePlayerPosition()
+		public double EvaluatePlayerPosition()
 		{
 			//tells in how good position player is
 			throw new NotImplementedException();
@@ -271,7 +276,34 @@ namespace ChessAI
 		public Win ExecuteTurn()
 		{
 			Turns++;
-			try
+            double currEval;
+            int reps;
+            try
+            {
+                currEval = EvaluatePlayerPosition();
+                reps = 0;
+                foreach (double eval in whiteEvals)
+                {
+                    if (eval == currEval)
+                        reps++;
+                }
+                whiteEvals.Enqueue(currEval);
+                if (reps == 2)
+                {
+                    //check back history if these are actually exact same positions
+                    //if so - to speed up we might just want to ignore it
+                    threeholdRepetition = true;
+                }
+                else if (reps == 4)
+                {
+                    //... as above
+                    GameState = Win.Stalemate;
+                    return Win.Stalemate;
+                }
+            }
+            catch(NotImplementedException)
+            { }
+            try
 			{
 				Execute(whitePlayer.Decide(this));
 				UpdateGameState(Color.White);
@@ -294,7 +326,32 @@ namespace ChessAI
 				UndoMove(1);
 			}
 
-			try
+            try
+            {
+                currEval = EvaluatePlayerPosition();
+                reps = 0;
+                foreach (double eval in blackEvals)
+                {
+                    if (eval == currEval)
+                        reps++;
+                }
+                blackEvals.Enqueue(currEval);
+                if (reps == 2)
+                {
+                    //check back history if these are actually exact same positions
+                    //if so - to speed up we might just want to ignore it
+                    threeholdRepetition = true;
+                }
+                else if (reps == 4)
+                {
+                    //... as above
+                    GameState = Win.Stalemate;
+                    return Win.Stalemate;
+                }
+            }
+            catch(NotImplementedException)
+            { }
+            try
 			{
 				Execute(blackPlayer.Decide(this));
 				UpdateGameState(Color.Black);
