@@ -19,6 +19,8 @@ namespace ChessAI
 		// members
 		public Piece[,] BoardTab { get; private set; }
 		Player whitePlayer, blackPlayer;
+        double fiftyMoveRule;
+        public bool CanDraw { get { return fiftyMoveRule >= 50; } } 
 		public int Turns { get; private set; }
 		public Point LatestMoved { get { return history.Count != 0 ? history.Peek().to : null; } }
 		public Win GameState { get; private set; }
@@ -30,6 +32,7 @@ namespace ChessAI
 		{
 			Console.ForegroundColor = ConsoleColor.White;
 			Turns = 0;
+            fiftyMoveRule = 0;
 			history = new Stack<Move>();
 			deletedPieces = new Stack<Piece>();
 			whitePlayer = a.color == Color.White ? a : b;
@@ -124,25 +127,19 @@ namespace ChessAI
 			//save result
 			//next time start searching from pieces that where checking
 			List<Point> checingPieces = new List<Point>();
-			for (int height = 0; height < 8; height++)
-			{
-				for (int width = 0; width < 8; width++)
-				{
-					if (BoardTab[width, height] != null && BoardTab[width, height].color != color)
-					{
-						Piece piece = BoardTab[width, height];
-						bool isChecking = piece.GetMoves(this, new Point(width, height)).Where(
-							x => { Piece dest = BoardTab[x.x, x.y]; return dest == null ? false : (dest.color == color && dest.letter == 'K'); }
-							).Count() != 0;
-						if (isChecking)
-						{
-							checingPieces.Add(new Point(width, height));
-							if (breakOnFound)
-								return checingPieces;
-						}
-					}
-				}
-			}
+            foreach(Point piecePos in GetAllPiecesPositions(color==Color.Black ? Color.White : Color.Black))
+            {
+                Piece piece = BoardTab[piecePos.x, piecePos.y];
+                bool isChecking = piece.GetMoves(this, piecePos).Where(
+                            x => { Piece dest = BoardTab[x.x, x.y]; return dest == null ? false : (dest.color == color && dest.letter == 'K'); }
+                            ).Count() != 0;
+                if (isChecking)
+                {
+                    checingPieces.Add(piecePos);
+                    if (breakOnFound)
+                        return checingPieces;
+                }
+            }
 			return checingPieces;
 		}
 		public void UndoMove(int nrOfMoves)
@@ -198,30 +195,20 @@ namespace ChessAI
 			//check for checkmate/stalemate and other draw options
 
 			bool isEnemyChecked = PiecesCheckingKing(playerColor == Color.Black ? Color.White : Color.Black, true).Count != 0;
+            Color opponentColor = playerColor == Color.Black ? Color.White : Color.Black;
 
-			if (!isEnemyChecked)
+            if (!isEnemyChecked)
 			{
 				GameState = Win.None;
 			}
 			else
 			{
-				bool stoppedCheck = false;
-				for (int height = 0; height < 8; height++)
-				{
-					for (int width = 0; width < 8; width++)
-					{
-						if (BoardTab[width, height] != null && BoardTab[width, height].color != playerColor)
-						{
-							stoppedCheck = BoardTab[width, height].GetValidMoves(this, new Point(width, height)).Count != 0;
-						}
-					}
-				}
-				if (stoppedCheck)
+                if (hasAnyValidMoves(opponentColor))
 					GameState = playerColor == Color.Black ? Win.BlackCheck : Win.WhiteCheck;
 				else GameState = playerColor == Color.Black ? Win.Black : Win.White;
 			}
 			//stalemate
-			if (GameState == Win.None && !hasAnyValidMoves(playerColor))
+			if (GameState == Win.None && !hasAnyValidMoves(opponentColor))
 			{
 				GameState = Win.Stalemate;
 			}
@@ -247,7 +234,11 @@ namespace ChessAI
 				deletedPieces.Push(BoardTab[move[1].x, move[1].y]);
 			}
 			else moveToSave.hasTaken = false;
-			BoardTab[move[1].x, move[1].y] = BoardTab[move[0].x, move[0].y];
+
+            if (BoardTab[move[0].x, move[0].y].letter == 'P' || moveToSave.hasTaken)
+                fiftyMoveRule = 0;
+            else fiftyMoveRule += 0.5; //whole move is when both players moved
+            BoardTab[move[1].x, move[1].y] = BoardTab[move[0].x, move[0].y];
 			BoardTab[move[0].x, move[0].y] = null;
 			Piece movedPiece = BoardTab[move[1].x, move[1].y];
 			Color playerColor = movedPiece.color;
@@ -286,13 +277,18 @@ namespace ChessAI
 				UpdateGameState(Color.White);
 				if (GameState == Win.White || GameState == Win.Stalemate)
 					return GameState;
-			}
-			catch (QuitException)
-			{
-				GameState = Win.Black;
-				return GameState;
-			}
-			catch (ReverseException)
+            }
+            catch (QuitException)
+            {
+                GameState = Win.Black;
+                return GameState;
+            }
+            catch (DeclareDrawException)
+            {
+                GameState = Win.Stalemate;
+                return GameState;
+            }
+            catch (ReverseException)
 			{
 				Turns--;
 				UndoMove(1);
@@ -307,8 +303,13 @@ namespace ChessAI
 			{
 				GameState = Win.White;
 				return GameState;
-			}
-			catch (ReverseException)
+            }
+            catch (DeclareDrawException)
+            {
+                GameState = Win.Stalemate;
+                return GameState;
+            }
+            catch (ReverseException)
 			{
 				Turns--;
 				UndoMove(1);

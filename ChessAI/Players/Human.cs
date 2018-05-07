@@ -8,7 +8,7 @@ namespace ChessAI
 	class Human : Player
 	{
 		public Human(Color color) : base(color) { }
-		private Point GetPiece(string message)
+		private Point GetPiece(string message, bool canDraw)
 		{
 			string piece;
 			while (true)
@@ -16,15 +16,25 @@ namespace ChessAI
 				Console.WriteLine(message);
 				piece = Console.ReadLine();
 
-				if (piece.Equals("-q"))
-					throw new QuitException();
-				else if (piece.Equals("-r"))
-					throw new ReverseException();
-				else if (piece.Length < 2 || piece[0] < 'a' || piece[0] > 'h' || piece[1] < '0' || piece[1] > '9')
-				{
-					Console.WriteLine("Złe polecenie");
-					continue;
-				}
+                if (piece.Equals("-q"))
+                    throw new QuitException();
+                else if (piece.Equals("-r"))
+                    throw new ReverseException();
+                else if (piece.Equals("-d"))
+                {
+                    if (canDraw)
+                        throw new DeclareDrawException();
+                    else
+                    {
+                        Console.WriteLine("Nie możesz wymagać remisu");
+                        continue;
+                    }
+                }
+                else if (piece.Length < 2 || piece[0] < 'a' || piece[0] > 'h' || piece[1] < '0' || piece[1] > '9')
+                {
+                    Console.WriteLine("Złe polecenie");
+                    continue;
+                }
 				break;
 			}
 			return new Point(piece[0] - 'a', 8 - (piece[1] - '0'));
@@ -40,7 +50,7 @@ namespace ChessAI
 
 			while (true)
 			{
-				playerChoice[0] = GetPiece("Wybierz bierkę");
+				playerChoice[0] = GetPiece("Wybierz bierkę", board.CanDraw);
 
 				onBoard = board.BoardTab[playerChoice[0].x, playerChoice[0].y];
 				if (onBoard == null || onBoard.color != color)
@@ -68,7 +78,7 @@ namespace ChessAI
 					Console.Write((char)('a' + move.x) + (8 - move.y).ToString() + " ");
 				}
 				Console.WriteLine();
-				playerChoice[1] = GetPiece("Ustaw wybraną bierkę");
+				playerChoice[1] = GetPiece("Ustaw wybraną bierkę", board.CanDraw);
 				if (!Array.Exists(availableMoves, x => x.x == playerChoice[1].x && x.y == playerChoice[1].y))
 				{
 					Console.WriteLine("Nie możesz wykonać takiego ruchu");
