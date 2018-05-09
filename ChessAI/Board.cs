@@ -268,11 +268,39 @@ namespace ChessAI
 			moveToSave.to = move[1];
 			history.Push(moveToSave);
 		}
-		public double EvaluatePlayerPosition()
+		public double EvaluatePlayerPosition(Color playerColor)
 		{
-			//tells in how good position player is
-			throw new NotImplementedException();
-		}
+            double currentEval = 0;
+            double maxvalue = 0;
+            double result = 0;
+            List<Point> listOfPieces = GetAllPiecesPositions(playerColor);
+            foreach (var piece in listOfPieces)
+            {
+                currentEval += BoardTab[piece.x, piece.y].whiteArrayPiecePosition[piece.x,piece.y];
+                maxvalue += BoardTab[piece.x, piece.y].maxValueAtPosition;
+            }
+            result = currentEval / maxvalue;
+            if (result < 0)
+            {
+                return (double)0;
+            }
+            else
+            {
+                return result;
+            }
+            
+        }
+
+        public double EvaluatePlayerPieces(Color playerColor)
+        {
+            double currentEval = 0;
+            List<Point> listOfPieces = GetAllPiecesPositions(playerColor);
+            foreach (var piece in listOfPieces)
+            {
+                currentEval += BoardTab[piece.x, piece.y].valueOfPiece;
+            }
+            return currentEval/(double)24000;
+        }
 		public Win ExecuteTurn()
 		{
 			Turns++;
@@ -280,7 +308,7 @@ namespace ChessAI
             int reps;
             try
             {
-                currEval = EvaluatePlayerPosition();
+                currEval = EvaluatePlayerPosition(whitePlayer.color);
                 reps = 0;
                 foreach (double eval in whiteEvals)
                 {
@@ -328,7 +356,7 @@ namespace ChessAI
 
             try
             {
-                currEval = EvaluatePlayerPosition();
+                currEval = EvaluatePlayerPosition(blackPlayer.color);
                 reps = 0;
                 foreach (double eval in blackEvals)
                 {

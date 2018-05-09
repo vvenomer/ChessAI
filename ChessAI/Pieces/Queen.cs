@@ -7,13 +7,42 @@ namespace ChessAI.Pieces
 	class Queen : Piece
 	{
 		const char Letter = 'Q';
-		public Queen() { }
+
+        const int ValueOfPiece = 900;
+        const int MaxValueOfPosition = 5;
+        public override int maxValueAtPosition { get { return MaxValueOfPosition; } }
+
+        int[,] WhiteArrayPiecePosition = new int[8, 8]{
+           { -20,-10,-10, -5, -5,-10,-10,-20 },
+           { -10,  0,  0,  0,  0,  0,  0,-10},
+           { -10,  0,  5,  5,  5,  5,  0,-10 },
+           { -5,  0,  5,  5,  5,  5,  0, -5 },
+           { 0,  0,  5,  5,  5,  5,  0, -5 },
+           { -10,  5,  5,  5,  5,  5,  0,-10},
+           { -10,  0,  5,  0,  0,  0,  0,-10 },
+           { -20,-10,-10, -5, -5,-10,-10,-20},
+        };
+        int[,] BlackArrayPiecePosition = new int[8, 8] {
+           { -20,-10,-10, -5, -5,-10,-10,-20 },
+           { -10,  0,  0,  0,  0,  0,  0,-10},
+           { -10,  0,  5,  5,  5,  5,  0,-10 },
+           { -5,  0,  5,  5,  5,  5,  0, -5 },
+           { 0,  0,  5,  5,  5,  5,  0, -5 },
+           { -10,  5,  5,  5,  5,  5,  0,-10},
+           { -10,  0,  5,  0,  0,  0,  0,-10 },
+           { -20,-10,-10, -5, -5,-10,-10,-20},
+        };
+
+        public override int[,] whiteArrayPiecePosition { get { return WhiteArrayPiecePosition; } }
+
+        public override int[,] blackArrayPiecePosition { get { return BlackArrayPiecePosition; } }
+        public Queen() { }
 
 		public Queen(Color color) : base(color) { }
 
 		public override char letter { get { return Letter; } }
-
-		private bool AddToList(List<Point> list, Board board, int x, int y)
+        public override int valueOfPiece { get { return ValueOfPiece; } }
+        private bool AddToList(List<Point> list, Board board, int x, int y)
 		{
 
 			//null -> add, continue
