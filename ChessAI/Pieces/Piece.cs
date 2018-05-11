@@ -8,8 +8,7 @@ namespace ChessAI
 		public Color color { get; set; }
 
         public abstract int valueOfPiece { get;}
-        public abstract int[,] whiteArrayPiecePosition { get; }
-        public abstract int[,] blackArrayPiecePosition { get; }
+        public abstract int[,] ArrayPiecePosition { get; }
         public abstract int maxValueAtPosition { get; }
 
         public abstract char letter { get; }

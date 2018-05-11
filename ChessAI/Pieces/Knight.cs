@@ -11,17 +11,7 @@ namespace ChessAI.Pieces
         const int ValueOfPiece = 320;
         const int MaxValueOfPosition = 20;
         public override int maxValueAtPosition { get { return MaxValueOfPosition; } }
-        int[,] WhiteArrayPiecePosition = new int[8, 8]{
-           { -50,-40,-30,-30,-30,-30,-40,-50 },
-           { -40,-20,  0,  0,  0,  0,-20,-40 },
-           { -30,  0, 10, 15, 15, 10,  0,-30 },
-           { -30,  5, 15, 20, 20, 15,  5,-30 },
-           { -30,  0, 15, 20, 20, 15,  0,-30 },
-           { -30,  5, 10, 15, 15, 10,  5,-30 },
-           { -40,-20,  0,  5,  5,  0,-20,-40 },
-           { -50,-40,-30,-30,-30,-30,-40,-50 },
-        };
-        int[,] BlackArrayPiecePosition = new int[8, 8] {
+        static int[,] arrayPiecePosition = new int[8, 8]{
            { -50,-40,-30,-30,-30,-30,-40,-50 },
            { -40,-20,  0,  0,  0,  0,-20,-40 },
            { -30,  0, 10, 15, 15, 10,  0,-30 },
@@ -32,9 +22,8 @@ namespace ChessAI.Pieces
            { -50,-40,-30,-30,-30,-30,-40,-50 },
         };
 
-        public override int[,] whiteArrayPiecePosition { get { return WhiteArrayPiecePosition; } }
-
-        public override int[,] blackArrayPiecePosition { get { return BlackArrayPiecePosition; } }
+        public override int[,] ArrayPiecePosition { get { return arrayPiecePosition; } }
+        
         public Knight() { }
 
         public Knight(Color color) : base(color) { }

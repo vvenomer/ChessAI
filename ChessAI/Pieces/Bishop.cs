@@ -13,7 +13,7 @@ namespace ChessAI.Pieces
         public override int maxValueAtPosition { get { return MaxValueOfPosition; } }
 
         const int ValueOfPiece = 330;
-        int[,] WhiteArrayPiecePosition = new int[8,8]{
+        static int[,] arrayPiecePosition = new int[8,8]{
             {-20,-10,-10,-10,-10,-10,-10,-20 },
             {-10,  0,  0,  0,  0,  0,  0,-10 },
             {-10,  0,  5, 10, 10,  5,  0,-10 },
@@ -23,20 +23,9 @@ namespace ChessAI.Pieces
             {-10,  5,  0,  0,  0,  0,  5,-10},
             {-20,-10,-10,-10,-10,-10,-10,-20 },
         };
-        int[,] BlackArrayPiecePosition = new int[8,8] {
-            {-20,-10,-10,-10,-10,-10,-10,-20 },
-            {-10,  5,  0,  0,  0,  0,  5,-10},
-            {-10, 10, 10, 10, 10, 10, 10,-10 },
-            {-10,  0, 10, 10, 10, 10,  0,-10 },
-            { -10,  5,  5, 10, 10,  5,  5,-10},
-            {-10,  0,  5, 10, 10,  5,  0,-10 },
-            {-10,  0,  0,  0,  0,  0,  0,-10 },
-            {-20,-10,-10,-10,-10,-10,-10,-20 },
-        };
 
-        public override int[,] whiteArrayPiecePosition { get { return WhiteArrayPiecePosition; } }
-
-        public override int[,] blackArrayPiecePosition { get { return BlackArrayPiecePosition; } }
+        public override int[,] ArrayPiecePosition { get { return arrayPiecePosition; } }
+        
         public override char letter { get { return Letter; } }
         public override int valueOfPiece { get { return ValueOfPiece; } }
 

@@ -208,12 +208,12 @@ namespace ChessAI
 			}
 			else
 			{
-                if (hasAnyValidMoves(opponentColor))
+                if (HasAnyValidMoves(opponentColor))
 					GameState = playerColor == Color.Black ? Win.BlackCheck : Win.WhiteCheck;
 				else GameState = playerColor == Color.Black ? Win.Black : Win.White;
 			}
 			//stalemate
-			if (GameState == Win.None && !hasAnyValidMoves(opponentColor))
+			if (GameState == Win.None && !HasAnyValidMoves(opponentColor))
 			{
 				GameState = Win.Stalemate;
 			}
@@ -274,17 +274,13 @@ namespace ChessAI
 		{
             double currentEval = 0;
             double maxvalue = 0;
-            double result = 0;
             List<Point> listOfPieces = GetAllPiecesPositions(playerColor);
             foreach (var piece in listOfPieces)
             {
-                currentEval += BoardTab[piece.x, piece.y].whiteArrayPiecePosition[piece.y,piece.x];
+                currentEval += BoardTab[piece.x, piece.y].ArrayPiecePosition[playerColor == Color.White ? (piece.y) : (7 - piece.y), piece.x];
                 maxvalue += BoardTab[piece.x, piece.y].maxValueAtPosition;
             }
-            result = currentEval / maxvalue;
-            result = +1;
-            result /= 2;
-            return result;
+            return (currentEval / maxvalue + 1) / 2;
             
         }
 
@@ -301,40 +297,40 @@ namespace ChessAI
 
         public double Evaluate(Color playerColor)
         {
-            double result = 0;
-            result = (EvaluatePlayerPosition(playerColor) * EvaluatePlayerPieces(playerColor));
-            return result;
+            return (EvaluatePlayerPosition(playerColor) * EvaluatePlayerPieces(playerColor));
         }
-		public Win ExecuteTurn()
+
+        bool XholdRepetition(Color color)
+        {
+            double currEval = Evaluate(color);
+            int reps = 0;
+            Queue<double> evalsPtr = color == Color.White ? whiteEvals : blackEvals;
+            foreach (double eval in evalsPtr)
+            {
+                if (eval == currEval)
+                    reps++;
+            }
+            evalsPtr.Enqueue(currEval);
+            if (reps == 2)
+            {
+                //check back history if these are actually exact same positions
+                //if so - to speed up we might just want to ignore it
+                threeholdRepetition = true;
+            }
+            else if (reps == 4)
+            {
+                //... as above
+                return true;
+            }
+            return false;
+        }
+
+
+        public Win ExecuteTurn()
 		{
 			Turns++;
-            double currEval;
-            int reps;
-            try
-            {
-                currEval = Evaluate(whitePlayer.color);
-                reps = 0;
-                foreach (double eval in whiteEvals)
-                {
-                    if (eval == currEval)
-                        reps++;
-                }
-                whiteEvals.Enqueue(currEval);
-                if (reps == 2)
-                {
-                    //check back history if these are actually exact same positions
-                    //if so - to speed up we might just want to ignore it
-                    threeholdRepetition = true;
-                }
-                else if (reps == 4)
-                {
-                    //... as above
-                    GameState = Win.Stalemate;
-                    return Win.Stalemate;
-                }
-            }
-            catch(NotImplementedException)
-            { }
+            if(XholdRepetition(Color.White))
+                return GameState = Win.Stalemate;
             try
 			{
 				Execute(whitePlayer.Decide(this));
@@ -344,45 +340,20 @@ namespace ChessAI
             }
             catch (QuitException)
             {
-                GameState = Win.Black;
-                return GameState;
+                return GameState = Win.Black;
             }
             catch (DeclareDrawException)
             {
-                GameState = Win.Stalemate;
-                return GameState;
+                return GameState = Win.Stalemate;
             }
             catch (ReverseException)
 			{
 				Turns--;
 				UndoMove(1);
 			}
-
-            try
-            {
-                currEval = Evaluate(blackPlayer.color);
-                reps = 0;
-                foreach (double eval in blackEvals)
-                {
-                    if (eval == currEval)
-                        reps++;
-                }
-                blackEvals.Enqueue(currEval);
-                if (reps == 2)
-                {
-                    //check back history if these are actually exact same positions
-                    //if so - to speed up we might just want to ignore it
-                    threeholdRepetition = true;
-                }
-                else if (reps == 4)
-                {
-                    //... as above
-                    GameState = Win.Stalemate;
-                    return Win.Stalemate;
-                }
-            }
-            catch(NotImplementedException)
-            { }
+            
+            if (XholdRepetition(Color.Black))
+                return GameState = Win.Stalemate;
             try
 			{
 				Execute(blackPlayer.Decide(this));
@@ -390,19 +361,16 @@ namespace ChessAI
 			}
 			catch (QuitException)
 			{
-				GameState = Win.White;
-				return GameState;
+				return GameState = Win.White;
             }
             catch (DeclareDrawException)
             {
-                GameState = Win.Stalemate;
-                return GameState;
+                return GameState = Win.Stalemate;
             }
             catch (ReverseException)
 			{
 				Turns--;
 				UndoMove(1);
-
 			}
 			return GameState;
 		}
@@ -452,7 +420,7 @@ namespace ChessAI
 			}
 			return list;
 		}
-		public bool hasAnyValidMoves(Color playerColor)
+		public bool HasAnyValidMoves(Color playerColor)
 		{
 			List<Point> listOfPieces = GetAllPiecesPositions(playerColor);
 			List<Point> validMoves;

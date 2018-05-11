@@ -13,7 +13,7 @@ namespace ChessAI.Pieces
         const int MaxValueOfPosition = 10;
         public override int maxValueAtPosition { get { return MaxValueOfPosition; } }
 
-        int[,] WhiteArrayPiecePosition = new int[8, 8]{
+        static int[,] arrayPiecePosition = new int[8, 8]{
             { 0,  0,  0,  0,  0,  0,  0,  0 },
             {5,10, 10, 10, 10, 10, 10,  5 },
             {-5, 0,  0,  0,  0,  0,  0, -5 },
@@ -23,20 +23,8 @@ namespace ChessAI.Pieces
             {-5, 0,  0,  0,  0,  0,  0, -5 },
             {0, 0,  0,  5,  5,  0,  0,  0 },
         };
-        int[,] BlackArrayPiecePosition = new int[8, 8] {
-            {0, 0,  0,  5,  5,  0,  0,  0 },
-            {-5, 0,  0,  0,  0,  0,  0, -5 },
-            {-5,0,  0,  0,  0,  0,  0, -5 },
-            {-5,0,  0,  0,  0,  0,  0, -5 },
-            {-5, 0,  0,  0,  0,  0,  0, -5 },
-            {-5, 0,  0,  0,  0,  0,  0, -5 },
-            {5,10, 10, 10, 10, 10, 10,  5 },
-            { 0,  0,  0,  0,  0,  0,  0,  0 },
-        };
-
-        public override int[,] whiteArrayPiecePosition { get { return WhiteArrayPiecePosition; } }
-
-        public override int[,] blackArrayPiecePosition { get { return BlackArrayPiecePosition; } }
+        
+        public override int[,] ArrayPiecePosition { get { return arrayPiecePosition; } }
         public Rook() : base() { }
 
 		public Rook(Color color) : base(color) { }

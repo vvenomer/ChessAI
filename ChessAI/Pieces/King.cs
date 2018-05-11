@@ -10,7 +10,7 @@ namespace ChessAI.Pieces
         const int ValueOfPiece = 20000;
         const int MaxValueOfPosition = 30;
         public override int maxValueAtPosition { get { return MaxValueOfPosition; } }
-        int[,] WhiteArrayPiecePosition = new int[8, 8]{
+        static int[,] arrayPiecePosition = new int[8, 8]{
             {-30,-40,-40,-50,-50,-40,-40,-30 },
             {-30,-40,-40,-50,-50,-40,-40,-30 },
             {-30,-40,-40,-50,-50,-40,-40,-30 },
@@ -20,20 +20,9 @@ namespace ChessAI.Pieces
             {20, 20,  0,  0,  0,  0, 20, 20},
             {20, 30, 10,  0,  0, 10, 30, 20},
         };
-        int[,] BlackArrayPiecePosition = new int[8, 8] {
-            {20, 30, 10,  0,  0, 10, 30, 20},
-            {20, 20,  0,  0,  0,  0, 20, 20},
-            {-10,-20,-20,-20,-20,-20,-20,-10},
-            {-20,-30,-30,-40,-40,-30,-30,-20 },
-            { -30,-40,-40,-50,-50,-40,-40,-30},
-            {-30,-40,-40,-50,-50,-40,-40,-30 },
-            {-30,-40,-40,-50,-50,-40,-40,-30 },
-            {-30,-40,-40,-50,-50,-40,-40,-30 },
-        };
 
-        public override int[,] whiteArrayPiecePosition { get { return WhiteArrayPiecePosition; } }
-
-        public override int[,] blackArrayPiecePosition { get { return BlackArrayPiecePosition; } }
+        public override int[,] ArrayPiecePosition { get { return arrayPiecePosition; } }
+        
         public King(Color color) : base(color) { }
 		public King() : base() { }
 		public override char letter { get { return Letter; } }
