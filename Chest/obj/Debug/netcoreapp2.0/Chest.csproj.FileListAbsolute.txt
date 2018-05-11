@@ -1,0 +1,11 @@
+c:\users\amadeusz chmielowski\source\repos\Chest\Chest\bin\Debug\netcoreapp2.0\Chest.deps.json
+c:\users\amadeusz chmielowski\source\repos\Chest\Chest\bin\Debug\netcoreapp2.0\Chest.runtimeconfig.json
+c:\users\amadeusz chmielowski\source\repos\Chest\Chest\bin\Debug\netcoreapp2.0\Chest.runtimeconfig.dev.json
+c:\users\amadeusz chmielowski\source\repos\Chest\Chest\bin\Debug\netcoreapp2.0\Chest.dll
+c:\users\amadeusz chmielowski\source\repos\Chest\Chest\bin\Debug\netcoreapp2.0\Chest.pdb
+c:\users\amadeusz chmielowski\source\repos\Chest\Chest\obj\Debug\netcoreapp2.0\Chest.csprojResolveAssemblyReference.cache
+c:\users\amadeusz chmielowski\source\repos\Chest\Chest\obj\Debug\netcoreapp2.0\Chest.csproj.CoreCompileInputs.cache
+c:\users\amadeusz chmielowski\source\repos\Chest\Chest\obj\Debug\netcoreapp2.0\Chest.AssemblyInfoInputs.cache
+c:\users\amadeusz chmielowski\source\repos\Chest\Chest\obj\Debug\netcoreapp2.0\Chest.AssemblyInfo.cs
+c:\users\amadeusz chmielowski\source\repos\Chest\Chest\obj\Debug\netcoreapp2.0\Chest.dll
+c:\users\amadeusz chmielowski\source\repos\Chest\Chest\obj\Debug\netcoreapp2.0\Chest.pdb
