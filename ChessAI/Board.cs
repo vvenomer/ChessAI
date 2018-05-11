@@ -7,7 +7,7 @@ namespace ChessAI
 {
 	class Board
 	{
-		struct Move
+		public struct Move
 		{
 			public Point from;
 			public Point to;
@@ -20,13 +20,18 @@ namespace ChessAI
 		public Piece[,] BoardTab { get; private set; }
 		private Player whitePlayer, blackPlayer;
         private double fiftyMoveRule;
+
+
         private bool threeholdRepetition;
+        public static readonly char[] promoteOptions = { 'Q', 'N', 'R', 'B' };
         public bool CanDraw { get { return fiftyMoveRule >= 50 || threeholdRepetition; } } 
 		public int Turns { get; private set; }
-		public Point LatestMoved { get { return history.Count != 0 ? history.Peek().to : null; } }
+		public Point LatestMoved { get { return History.Count != 0 ? History.Peek().to : null; } }
 		public Win GameState { get; private set; }
-		private Stack<Move> history;
-		private Stack<Piece> deletedPieces;
+        public Stack<Move> History { get => history; }
+
+        private Stack<Move> history;
+        private Stack<Piece> deletedPieces;
         private Queue<double> whiteEvals;
         private Queue<double> blackEvals;
         // constructors
@@ -36,7 +41,7 @@ namespace ChessAI
 			Turns = 0;
             fiftyMoveRule = 0;
             threeholdRepetition = false;
-			history = new Stack<Move>();
+            history = new Stack<Move>();
             whiteEvals = new Queue<double>();
             blackEvals = new Queue<double>();
 			deletedPieces = new Stack<Piece>();
@@ -149,8 +154,8 @@ namespace ChessAI
 		}
 		public void UndoMove(int nrOfMoves)
 		{
-			if (nrOfMoves <= 0 || history.Count == 0) return;
-			Move move = history.Pop();
+			if (nrOfMoves <= 0 || History.Count == 0) return;
+			Move move = History.Pop();
 			//reverse piece position
 			Piece reversed = BoardTab[move.from.x, move.from.y] = BoardTab[move.to.x, move.to.y];
 			BoardTab[move.to.x, move.to.y] = null;
@@ -197,9 +202,13 @@ namespace ChessAI
 		}
 		public Win UpdateGameState(Color playerColor)
 		{
-			//check for checkmate/stalemate and other draw options
+            //check for checkmate/stalemate and other draw options
 
-			bool isEnemyChecked = PiecesCheckingKing(playerColor == Color.Black ? Color.White : Color.Black, true).Count != 0;
+            if (BoardTab[LatestMoved.x, LatestMoved.y].letter == 'P' || History.Peek().hasTaken)
+                fiftyMoveRule = 0;
+            else fiftyMoveRule += 0.5; //whole move is when both players moved
+
+            bool isEnemyChecked = PiecesCheckingKing(playerColor == Color.Black ? Color.White : Color.Black, true).Count != 0;
             Color opponentColor = playerColor == Color.Black ? Color.White : Color.Black;
 
             if (!isEnemyChecked)
@@ -219,20 +228,21 @@ namespace ChessAI
 			}
 			return GameState;
 		}
-		public void Execute(Point[] move)
+		public void Execute(Point[] move, bool test = false, int promoteTo = 0)
 		{
 			//save move and update board
 			Move moveToSave = new Move();
-			if (BoardTab[move[0].x, move[0].y].letter == 'P' && BoardTab[move[1].x, move[1].y] == null && move[0].x != move[1].x)
+            //en passant
+            if (BoardTab[move[0].x, move[0].y].letter == 'P' && BoardTab[move[1].x, move[1].y] == null && move[0].x != move[1].x)
 			{
 				moveToSave.hasEnPassanted = true;
 				moveToSave.hasTaken = true;
-				BoardTab[move[1].x, move[0].y] = null; //en passant
+				BoardTab[move[1].x, move[0].y] = null;
 			}
 			else moveToSave.hasTaken = moveToSave.hasEnPassanted = false;
-
+            //increase nr of moves
 			BoardTab[move[0].x, move[0].y].moves++;
-
+            //taking an enemy piece
 			if (BoardTab[move[1].x, move[1].y] != null)
 			{
 				moveToSave.hasTaken = true;
@@ -241,12 +251,10 @@ namespace ChessAI
                 deletedPieces.Push(BoardTab[move[1].x, move[1].y]);
 			}
 			else moveToSave.hasTaken = false;
-
-            if (BoardTab[move[0].x, move[0].y].letter == 'P' || moveToSave.hasTaken)
-                fiftyMoveRule = 0;
-            else fiftyMoveRule += 0.5; //whole move is when both players moved
+            //move piece
             BoardTab[move[1].x, move[1].y] = BoardTab[move[0].x, move[0].y];
 			BoardTab[move[0].x, move[0].y] = null;
+
 			Piece movedPiece = BoardTab[move[1].x, move[1].y];
 			Color playerColor = movedPiece.color;
 			//castling
@@ -263,12 +271,14 @@ namespace ChessAI
                 && movedPiece.letter == 'P')
             {
                 moveToSave.hasPromoted = true;
-                BoardTab[move[1].x, move[1].y] = ((Pawn)BoardTab[move[1].x, move[1].y]).Promote();
+                BoardTab[move[1].x, move[1].y] = ((Pawn)BoardTab[move[1].x, move[1].y]).Promote(test==true ? promoteOptions[promoteTo] :
+                    playerColor == Color.White ? whitePlayer.PromotePawn(promoteOptions) : blackPlayer.PromotePawn(promoteOptions));
             }
             else moveToSave.hasPromoted = false;
+            //save move
 			moveToSave.from = move[0];
 			moveToSave.to = move[1];
-			history.Push(moveToSave);
+            history.Push(moveToSave);
 		}
 		public double EvaluatePlayerPosition(Color playerColor)
 		{
@@ -334,7 +344,7 @@ namespace ChessAI
             try
 			{
 				Execute(whitePlayer.Decide(this));
-				UpdateGameState(Color.White);
+                UpdateGameState(Color.White);
 				if (GameState == Win.White || GameState == Win.Stalemate)
 					return GameState;
             }

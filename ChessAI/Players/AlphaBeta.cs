@@ -14,5 +14,10 @@ namespace ChessAI
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+        public override char PromotePawn(char[] options)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

@@ -1,7 +1,6 @@
 ﻿
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace ChessAI
 {
@@ -87,5 +86,17 @@ namespace ChessAI
 			}
 			return playerChoice;
 		}
-	}
+        public override char PromotePawn(char[] options)
+        {
+            Console.WriteLine("Pionek doszedł do linii przemiany. Wybierz na co chcesz go promować:");
+            Console.WriteLine("Q - hetman, N - goniec, R - wieża, B - skoczek");
+
+            string figure;
+            do
+            {
+                figure = Console.ReadLine();
+            } while (figure.Length != 1 || !options.Contains(figure[0]));
+            return figure[0];
+        }
+    }
 }

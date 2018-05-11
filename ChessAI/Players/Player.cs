@@ -14,5 +14,8 @@ namespace ChessAI
 		}
 
 		public abstract Point[] Decide(Board board);
-	}
+
+        public abstract char PromotePawn(char[] options);
+
+    }
 }

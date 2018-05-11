@@ -70,35 +70,22 @@ namespace ChessAI.Pieces
 			}
 			return list;
 		}
-        public Piece Promote()
+        public Piece Promote(char choice)
         {
-
-            Console.WriteLine("Pionek doszedł do linii przemiany. Wybierz na co chcesz go promować:");
-            Console.WriteLine("Q - hetman, N - goniec, R - wieża, B - skoczek");
-            string figure;
             Piece newPiece = null;
-            while (true)
+            switch (choice)
             {
-                figure = Console.ReadLine();
-                if (figure.Length != 1) continue;
-                switch (figure[0])
-                {
-                    case 'Q':
-                        newPiece = new Queen(color);
-                        break;
-                    case 'N':
-                        newPiece = new Knight(color);
-                        break;
-                    case 'R':
-                        newPiece = new Rook(color);
-                        break;
-                    case 'B':
-                        newPiece = new Bishop(color);
-                        break;
-                    default:
-                        continue;
-                }
-                if (newPiece != null)
+                case 'Q':
+                    newPiece = new Queen(color);
+                    break;
+                case 'N':
+                    newPiece = new Knight(color);
+                    break;
+                case 'R':
+                    newPiece = new Rook(color);
+                    break;
+                case 'B':
+                    newPiece = new Bishop(color);
                     break;
             }
             newPiece.moves = moves;
