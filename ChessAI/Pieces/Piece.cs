@@ -7,7 +7,12 @@ namespace ChessAI
 		public int moves { get; set; }
 		public Color color { get; set; }
 
-		public abstract char letter { get; }
+        public abstract int valueOfPiece { get;}
+        public abstract int[,] whiteArrayPiecePosition { get; }
+        public abstract int[,] blackArrayPiecePosition { get; }
+        public abstract int maxValueAtPosition { get; }
+
+        public abstract char letter { get; }
 
 		public Piece(Color color)
 		{

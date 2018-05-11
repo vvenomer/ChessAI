@@ -8,11 +8,39 @@ namespace ChessAI.Pieces
 	{
 		const char Letter = 'P';
 
-		public Pawn(Color color) : base(color) { }
+        const int ValueOfPiece = 100;
+        const int MaxValueOfPosition = 30;
+        public override int maxValueAtPosition { get { return MaxValueOfPosition; } }
+
+        int[,] WhiteArrayPiecePosition = new int[8, 8]{
+           { 0,  0,  0,  0,  0,  0,  0,  0 },
+           { 50, 50, 50, 50, 50, 50, 50, 50},
+           { 10, 10, 20, 30, 30, 20, 10, 10 },
+           { 5,  5, 10, 25, 25, 10,  5,  5 },
+           { 0,  0,  0, 20, 20,  0,  0,  0 },
+           { 5, -5,-10,  0,  0,-10, -5,  5 },
+           { 5, 10, 10,-20,-20, 10, 10,  5 },
+           { 0,  0,  0,  0,  0,  0,  0,  0 },
+        };
+        int[,] BlackArrayPiecePosition = new int[8, 8] {
+           { 0,  0,  0,  0,  0,  0,  0,  0 },
+           { 5, 10, 10,-20,-20, 10, 10,  5},
+           { 5, -5,-10,  0,  0,-10, -5,  5 },
+           { 0,  0,  0, 20, 20,  0,  0,  0 },
+           { 5,  5, 10, 25, 25, 10,  5,  5 },
+           { 10, 10, 20, 30, 30, 20, 10, 10},
+           { 50, 50, 50, 50, 50, 50, 50, 50},
+           { 0,  0,  0,  0,  0,  0,  0,  0 },
+        };
+
+        public override int[,] whiteArrayPiecePosition { get { return WhiteArrayPiecePosition; } }
+
+        public override int[,] blackArrayPiecePosition { get { return BlackArrayPiecePosition; } }
+        public Pawn(Color color) : base(color) { }
 		public Pawn() : base() { }
 		public override char letter { get { return Letter; } }
-
-		public override List<Point> GetMoves(Board board, Point myPos)
+        public override int valueOfPiece { get { return ValueOfPiece; } }
+        public override List<Point> GetMoves(Board board, Point myPos)
 		{
 			List<Point> list = new List<Point>();
 			int way = color == Color.White ? 1 : -1;

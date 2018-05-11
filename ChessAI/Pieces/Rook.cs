@@ -7,13 +7,43 @@ namespace ChessAI.Pieces
 	class Rook : Piece
 	{
 		const char Letter = 'R';
-		public Rook() : base() { }
+
+        const int ValueOfPiece = 500;
+
+        const int MaxValueOfPosition = 10;
+        public override int maxValueAtPosition { get { return MaxValueOfPosition; } }
+
+        int[,] WhiteArrayPiecePosition = new int[8, 8]{
+            { 0,  0,  0,  0,  0,  0,  0,  0 },
+            {5,10, 10, 10, 10, 10, 10,  5 },
+            {-5, 0,  0,  0,  0,  0,  0, -5 },
+            {-5,0,  0,  0,  0,  0,  0, -5 },
+            {-5,0,  0,  0,  0,  0,  0, -5 },
+            {-5, 0,  0,  0,  0,  0,  0, -5 },
+            {-5, 0,  0,  0,  0,  0,  0, -5 },
+            {0, 0,  0,  5,  5,  0,  0,  0 },
+        };
+        int[,] BlackArrayPiecePosition = new int[8, 8] {
+            {0, 0,  0,  5,  5,  0,  0,  0 },
+            {-5, 0,  0,  0,  0,  0,  0, -5 },
+            {-5,0,  0,  0,  0,  0,  0, -5 },
+            {-5,0,  0,  0,  0,  0,  0, -5 },
+            {-5, 0,  0,  0,  0,  0,  0, -5 },
+            {-5, 0,  0,  0,  0,  0,  0, -5 },
+            {5,10, 10, 10, 10, 10, 10,  5 },
+            { 0,  0,  0,  0,  0,  0,  0,  0 },
+        };
+
+        public override int[,] whiteArrayPiecePosition { get { return WhiteArrayPiecePosition; } }
+
+        public override int[,] blackArrayPiecePosition { get { return BlackArrayPiecePosition; } }
+        public Rook() : base() { }
 
 		public Rook(Color color) : base(color) { }
 
 		public override char letter { get { return Letter; } }
-
-		private bool AddToList(List<Point> list, Board board, int x, int y)
+        public override int valueOfPiece { get { return ValueOfPiece; } }
+        private bool AddToList(List<Point> list, Board board, int x, int y)
 		{
 
 			//null -> add, continue
