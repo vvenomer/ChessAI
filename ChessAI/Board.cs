@@ -127,7 +127,8 @@ namespace ChessAI
 				}
 			}
 		}
-		public List<Point> PiecesCheckingKing(Color color, bool breakOnFound = false)
+
+        public List<Point> PiecesCheckingKing(Color color, bool breakOnFound = false)
 		{
 			//possible optimalization:
 			//1
@@ -152,7 +153,8 @@ namespace ChessAI
             }
 			return checingPieces;
 		}
-		public void UndoMove(int nrOfMoves)
+
+        public void UndoMove(int nrOfMoves)
 		{
 			if (nrOfMoves <= 0 || History.Count == 0) return;
 			Move move = History.Pop();
@@ -194,13 +196,17 @@ namespace ChessAI
 			}
 			if (move.hasPromoted)
 			{
-				//change back to pawn
-				BoardTab[move.from.x, move.from.y] = new Pawn(reversed.color);
-			}
+                //change back to pawn
+                BoardTab[move.from.x, move.from.y] = new Pawn(reversed.color)
+                {
+                    moves = reversed.moves
+                };
+            }
 			reversed.moves--;
 			UndoMove(nrOfMoves - 1);
 		}
-		public Win UpdateGameState(Color playerColor)
+
+        public Win UpdateGameState(Color playerColor)
 		{
             //check for checkmate/stalemate and other draw options
 
@@ -228,7 +234,8 @@ namespace ChessAI
 			}
 			return GameState;
 		}
-		public void Execute(Point[] move, bool test = false, int promoteTo = 0)
+
+        public void Execute(Point[] move, bool test = false, int promoteTo = 0)
 		{
 			//save move and update board
 			Move moveToSave = new Move();
@@ -239,7 +246,7 @@ namespace ChessAI
 				moveToSave.hasTaken = true;
 				BoardTab[move[1].x, move[0].y] = null;
 			}
-			else moveToSave.hasTaken = moveToSave.hasEnPassanted = false;
+			//else moveToSave.hasTaken = moveToSave.hasEnPassanted = false;
             //increase nr of moves
 			BoardTab[move[0].x, move[0].y].moves++;
             //taking an enemy piece
@@ -280,7 +287,8 @@ namespace ChessAI
 			moveToSave.to = move[1];
             history.Push(moveToSave);
 		}
-		public double EvaluatePlayerPosition(Color playerColor)
+
+        public double EvaluatePlayerPosition(Color playerColor)
 		{
             double currentEval = 0;
             double maxvalue = 0;
