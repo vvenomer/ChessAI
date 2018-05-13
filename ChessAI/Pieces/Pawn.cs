@@ -57,15 +57,15 @@ namespace ChessAI.Pieces
 			//en passant
 			if (board.LatestMoved == null) //nothing moved yet
 				return list;
-			Piece latestMoved = board.BoardTab[board.LatestMoved.x, board.LatestMoved.y];
+			Piece latestMoved = board.BoardTab[board.LatestMoved.to.x, board.LatestMoved.to.y];
 			if (latestMoved.letter == 'P' && //pawn
 				latestMoved.color != color && //enemy
 				latestMoved.moves == 1 && //moved once
-				board.LatestMoved.y == 4 || board.LatestMoved.y == 5) //it was double step move
+				board.LatestMoved.to.y == 4 || board.LatestMoved.to.y == 5) //it was double step move
 			{
-				if (myPos.x > 0 && myPos.x - 1 == board.LatestMoved.x && myPos.y == board.LatestMoved.y) //this pawn is next to it
+				if (myPos.x > 0 && myPos.x - 1 == board.LatestMoved.to.x && myPos.y == board.LatestMoved.to.y) //this pawn is next to it
 					list.Add(new Point(myPos.x - 1, myPos.y + way));
-				if (myPos.x < 7 && myPos.x + 1 == board.LatestMoved.x && myPos.y == board.LatestMoved.y) //this pawn is next to it
+				if (myPos.x < 7 && myPos.x + 1 == board.LatestMoved.to.x && myPos.y == board.LatestMoved.to.y) //this pawn is next to it
 					list.Add(new Point(myPos.x + 1, myPos.y + way));
 			}
 			return list;

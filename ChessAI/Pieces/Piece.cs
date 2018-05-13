@@ -25,25 +25,28 @@ namespace ChessAI
 
 		public List<Point> GetValidMoves(Board board, Point myPos)
 		{
-			List<Point> possibleMoves = GetMoves(board, myPos);
+            List<Point> possibleMoves = GetMoves(board, myPos);
             bool promoted;
 			//additional validation for all pieces
 			for (int i = 0; i < possibleMoves.Count; i++)
 			{
                 promoted = false;
-				//would this move cause my king to be checked
-				Point[] mov = { myPos, possibleMoves[i] };
+                //would this move cause my king to be checked
+                Point[] mov = { myPos, possibleMoves[i] };
                 board.Execute(mov, true); //but don't check for check
-                promoted = board.History.Peek().hasPromoted;
+
+                promoted = board.LatestMoved.hasPromoted;
 				bool check = board.PiecesCheckingKing(color, true).Count != 0;
-				board.UndoMove(1);
-                if(!check && promoted)
+                Board.Move move = board.LatestMoved;
+                board.UndoMove(1);
+                if (!check && promoted)
                 {
                     for(int j = 1; j < Board.promoteOptions.Length; j++)
                     {
                         board.Execute(mov, true, j); //but don't check for check
-                        promoted = board.History.Peek().hasPromoted;
+                        promoted = board.LatestMoved.hasPromoted;
                         check = board.PiecesCheckingKing(color, true).Count != 0;
+
                         board.UndoMove(1);
                         if (check) break;
                     }
@@ -54,7 +57,7 @@ namespace ChessAI
 					i--;
 				}
 			}
-			return possibleMoves;
+            return possibleMoves;
 		}
 		public abstract List<Point> GetMoves(Board board, Point myPos);
 

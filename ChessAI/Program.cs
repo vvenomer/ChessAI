@@ -9,19 +9,22 @@ namespace ChessAI
 		{
 			Player A = new RandomPlayer(Color.White);
 			Player B = new RandomPlayer(Color.Black);
-            /*int[] results = new int[3];
-            for (int i = 0; i < 1000000; i++)
-            {*/
+            int[] results = new int[3];
+            for (int i = 0; i < 1000; i++)
+            {
                 Board board = new Board(A, B);
 
                 do
                 {
                     board.ExecuteTurn();
-                    //board.Print(null);
-                    //Console.WriteLine("Turns: " + board.Turns);
                     //Console.ReadLine();
                 } while (!board.MatchEnded());
-                /*switch(board.GameState)
+                if ((i + 1) % 10 == 0)
+                {
+                    Console.SetCursorPosition(0,0);
+                    Console.WriteLine("Games: " + (i + 1));
+                }
+                switch (board.GameState)
                 {
                     case Win.Black:
                         results[0]++;
@@ -33,11 +36,13 @@ namespace ChessAI
                         results[2]++;
                         break;
                 }
-            }*/
-			//Console.Clear();
-			board.PrintMatchResult();
-            //for(int i = 0; i < 3; i++)
-            //    Console.WriteLine(results[i] + "\t");
+            }
+            //Console.Clear();
+            //board.PrintMatchResult();
+            Console.WriteLine("Black wins: " + results[0]);
+            Console.WriteLine("White wins: " + results[1]);
+            Console.WriteLine("Stalemates: " + results[2]);
+            Console.Read();
 		}
 	}
 }
