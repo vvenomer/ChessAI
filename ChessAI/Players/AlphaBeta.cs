@@ -24,21 +24,43 @@ namespace ChessAI
             {
                 return new Node() { move = null, eval = board.Evaluate(color) };
             }
-            List<Point> possibilites = board.GetAllPiecesPositions(isMin ? color : color==Color.Black ? Color.White : Color.Black);
+            List<Point> possibilites = board.GetAllPiecesPositions(isMin ? (color==Color.Black ? Color.White : Color.Black) : color);
             foreach (Point piecePos in possibilites)
             {
 
                 foreach (Point move in board.BoardTab[piecePos.x, piecePos.y].GetValidMoves(board, piecePos))
                 {
                     Point[] tempMove = new Point[2] { piecePos, move };
+                    var pieces = board.GetAllPiecesPositions(Color.White).Concat(board.GetAllPiecesPositions(Color.Black));
                     board.Execute(tempMove);
                     Node result = DoAlphaBeta(!isMin, board, depth -1, alpha, beta);
                     board.UndoMove(1);
+                    /*var pieces2 = board.GetAllPiecesPositions(Color.White).Concat(board.GetAllPiecesPositions(Color.Black));
+                    foreach(var piece in pieces)
+                    {
+                        if (pieces2.Where(x => {
+                            var find = board.BoardTab[x.x, x.y]; var toFind = board.BoardTab[piece.x, piece.y];
+                            return x.x == piece.x && x.y == piece.y && find.letter == toFind.letter && find.color == find.color && toFind.moves == toFind.moves;
+                            }).Count()==0)
+                            Console.WriteLine("!");
+                    }*/
+
+                    if (board.GetAllPiecesPositions(Color.Black).Concat(board.GetAllPiecesPositions(Color.White)).Where(x => {
+                        var piece = board.BoardTab[x.x, x.y];
+                        return piece.letter == 'P' &&
+                            ((piece.color == Color.White && x.y == 7) || (piece.color == Color.Black && x.y == 0));
+                    }).Count() != 0)
+                    {
+                        board.Print(null);
+                    }
+
                     if ((isMin && result.eval < MinMax.eval) || (!isMin && result.eval > MinMax.eval))
                     {
                         MinMax.eval = result.eval;
                         MinMax.move = tempMove;
                     }
+                    if ((isMin && MinMax.eval == 1) || (!isMin && MinMax.eval == 0))
+                        MinMax.move = tempMove;
                     if (isMin)
                         beta = Math.Min(result.eval, beta);
                     else
@@ -55,8 +77,7 @@ namespace ChessAI
 
         public override Point[] Decide(Board board)
         {
-
-            Node alfaBeta = DoAlphaBeta(false, board, 4);
+            Node alfaBeta = DoAlphaBeta(false, board, 3);
             return alfaBeta.move;
         }
 

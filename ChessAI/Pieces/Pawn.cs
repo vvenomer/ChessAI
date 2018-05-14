@@ -37,7 +37,7 @@ namespace ChessAI.Pieces
 			if (moves == 0 && board.BoardTab[myPos.x, myPos.y + way * 2] == null && board.BoardTab[myPos.x, myPos.y + way] == null)
 				list.Add(new Point(myPos.x, myPos.y + way * 2));
 			//move 1 file forward
-			if ((way > 0 && myPos.y < 8) || (way < 0 && myPos.y > 0))
+			if ((way > 0 && myPos.y < 7) || (way < 0 && myPos.y > 0))
 				if (board.BoardTab[myPos.x, myPos.y + way] == null)
 					list.Add(new Point(myPos.x, myPos.y + way));
 			//hit enemy on diagonal left

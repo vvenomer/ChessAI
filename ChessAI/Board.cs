@@ -211,14 +211,17 @@ namespace ChessAI
             Color opponentColor = playerColor == Color.Black ? Color.White : Color.Black;
 
             if (!isEnemyChecked)
-			{
-				GameState = Win.None;
-			}
-			else
-			{
+            {
+                GameState = Win.None;
+            }
+            else
+            {
                 if (HasAnyValidMoves(opponentColor))
-					GameState = playerColor == Color.Black ? Win.BlackCheck : Win.WhiteCheck;
-				else GameState = playerColor == Color.Black ? Win.Black : Win.White;
+                    GameState = playerColor == Color.Black ? Win.BlackCheck : Win.WhiteCheck;
+                else
+                {
+                    GameState = playerColor == Color.Black ? Win.Black : Win.White;
+                }
             }
 			//stalemate
 			if (GameState == Win.None && !HasAnyValidMoves(opponentColor))
@@ -313,10 +316,12 @@ namespace ChessAI
 
         public double Evaluate(Color playerColor)
         {
-            return (EvaluatePlayerPosition(playerColor) * EvaluatePlayerPieces(playerColor));
+            Color enemy = playerColor == Color.White ? Color.Black : Color.White;
+            return (EvaluatePlayerPosition(playerColor)-EvaluatePlayerPosition(enemy)*0.75) 
+                * (EvaluatePlayerPieces(playerColor)-EvaluatePlayerPieces(enemy)*0.75);
         }
 
-        bool XholdRepetition(Color color)
+        bool ForceDraw(Color color)
         {
             double currEval = Evaluate(color);
             int reps = 0;
@@ -338,14 +343,14 @@ namespace ChessAI
                 //... as above
                 return true;
             }
-            return false;
+            return fiftyMoveRule > 75;
         }
 
 
         public Win ExecuteTurn()
 		{
 			Turns++;
-            if(XholdRepetition(Color.White))
+            if(ForceDraw(Color.White))
                 return GameState = Win.Stalemate;
             try
 			{
@@ -368,7 +373,7 @@ namespace ChessAI
 				UndoMove(1);
 			}
 
-            if (XholdRepetition(Color.Black))
+            if (ForceDraw(Color.Black))
                 return GameState = Win.Stalemate;
             try
 			{
