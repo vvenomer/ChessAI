@@ -44,17 +44,16 @@ namespace ChessAI
                 Console.WriteLine("Stalemates: " + results[2]);
                 */
 
+            Player A = new RandomPlayer(Color.White);
             Player B = new AlphaBeta(Color.Black);
-            Player A = new AlphaBeta(Color.White);
             Board board = new Board(A, B);
 
             do
             {
-                board.Print(null);
                 board.ExecuteTurn();
                 
-                //Console.SetCursorPosition(0, 0);
-                Console.Write(board.Turns);
+                Console.SetCursorPosition(0, 0);
+                Console.WriteLine(board.Turns);
                 //Console.ReadLine();
             } while (!board.MatchEnded());
             board.PrintMatchResult();

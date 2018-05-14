@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 namespace ChessAI
 {
@@ -13,9 +14,9 @@ namespace ChessAI
         }
 
 
-        private Node DoAlphaBeta(bool isMin, Board board, int depth)
+        private Node DoAlphaBeta(bool isMin, Board board, int depth, double alpha = 0, double beta = 1)
         {
-            Node MinMax = new Node
+            Node MinMax = new Node()
             {
                 eval = isMin ? 1 : 0
             };
@@ -23,7 +24,7 @@ namespace ChessAI
             {
                 return new Node() { move = null, eval = board.Evaluate(color) };
             }
-            List<Point> possibilites = board.GetAllPiecesPositions(color);
+            List<Point> possibilites = board.GetAllPiecesPositions(isMin ? color : color==Color.Black ? Color.White : Color.Black);
             foreach (Point piecePos in possibilites)
             {
 
@@ -31,14 +32,19 @@ namespace ChessAI
                 {
                     Point[] tempMove = new Point[2] { piecePos, move };
                     board.Execute(tempMove);
-                    Node result = DoAlphaBeta(!isMin, board, depth -1);
+                    Node result = DoAlphaBeta(!isMin, board, depth -1, alpha, beta);
+                    board.UndoMove(1);
                     if ((isMin && result.eval < MinMax.eval) || (!isMin && result.eval > MinMax.eval))
                     {
                         MinMax.eval = result.eval;
                         MinMax.move = tempMove;
-                       
                     }
-                    board.UndoMove(1);
+                    if (isMin)
+                        beta = Math.Min(result.eval, beta);
+                    else
+                        alpha = Math.Max(result.eval, alpha);
+                    if (beta <= alpha)
+                        return MinMax;
                 }
             }
             return MinMax;
@@ -50,7 +56,7 @@ namespace ChessAI
         public override Point[] Decide(Board board)
         {
 
-            Node alfaBeta = DoAlphaBeta(false, board, 3);
+            Node alfaBeta = DoAlphaBeta(false, board, 4);
             return alfaBeta.move;
         }
 
