@@ -189,8 +189,9 @@ namespace ChessAI
 			if (move.hasPromoted)
 			{
                 //change back to pawn
-                BoardTab[move.from.x, move.from.y] = new Pawn(reversed.color)
+                reversed = BoardTab[move.from.x, move.from.y] = new Pawn(reversed.color)
                 {
+                    
                     moves = reversed.moves
                 };
             }
