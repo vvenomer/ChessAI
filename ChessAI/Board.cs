@@ -69,7 +69,7 @@ namespace ChessAI
 		}
 
 		// methods
-		public void Print(Point[] markers)
+		public void Print(Point[] markers = null)
 		{
 			Console.Clear();
 			for (int height = 0; height < 9; height++)
@@ -166,18 +166,15 @@ namespace ChessAI
 				if (move.hasEnPassanted)
 				{
                     //put pawn back in place
-                    BoardTab[move.to.x, move.from.y] = new Pawn(enemyColor)
-					{
-						moves = 1
-					};
-				}
+                    BoardTab[move.to.x, move.from.y] = deletedPieces.Pop();
+                }
 				else
 				{
 					//put piece back
 					BoardTab[move.to.x, move.to.y] = deletedPieces.Pop();
 				}
 			}
-			else if (BoardTab[move.from.x, move.from.y].letter == 'K')
+			else if (reversed.letter == 'K')
 			{
 				//check for castling
 				if (Math.Abs(move.to.x - move.from.x) == 2)
@@ -191,7 +188,6 @@ namespace ChessAI
                 //change back to pawn
                 reversed = BoardTab[move.from.x, move.from.y] = new Pawn(reversed.color)
                 {
-                    
                     moves = reversed.moves
                 };
             }
@@ -206,6 +202,12 @@ namespace ChessAI
             if (BoardTab[LatestMoved.to.x, LatestMoved.to.y].letter == 'P' || history.Peek().hasTaken)
                 fiftyMoveRule = 0;
             else fiftyMoveRule += 0.5; //whole move is when both players moved
+
+            if(LatestMoved.hasTaken)
+            {
+                whiteEvals.Clear();
+                blackEvals.Clear();
+            }
 
             bool isEnemyChecked = PiecesCheckingKing(playerColor == Color.Black ? Color.White : Color.Black, true).Count != 0;
             Color opponentColor = playerColor == Color.Black ? Color.White : Color.Black;
@@ -245,17 +247,15 @@ namespace ChessAI
 			{
 				moveToSave.hasEnPassanted = true;
 				moveToSave.hasTaken = true;
-				BoardTab[move[1].x, move[0].y] = null;
+                deletedPieces.Push(BoardTab[move[1].x, move[0].y]);
+                BoardTab[move[1].x, move[0].y] = null;
 			}
-			//else moveToSave.hasTaken = moveToSave.hasEnPassanted = false;
             //increase nr of moves
 			BoardTab[move[0].x, move[0].y].moves++;
             //taking an enemy piece
 			if (BoardTab[move[1].x, move[1].y] != null)
 			{
 				moveToSave.hasTaken = true;
-                whiteEvals.Clear();
-                blackEvals.Clear();
                 deletedPieces.Push(BoardTab[move[1].x, move[1].y]);
 			}
             //move piece
@@ -273,7 +273,7 @@ namespace ChessAI
 				};
                 //save order Rook -> King
                 //when reversing pop both
-				Execute(newMove); //to rethink (when checking for win is done)
+				Execute(newMove);
 			}
             //pawn promotion
             if (((move[1].y == 7 && playerColor == Color.White) || (move[1].y == 0 && playerColor == Color.Black))
@@ -317,8 +317,8 @@ namespace ChessAI
         public double Evaluate(Color playerColor)
         {
             Color enemy = playerColor == Color.White ? Color.Black : Color.White;
-            return (EvaluatePlayerPosition(playerColor)-EvaluatePlayerPosition(enemy)*0.75) 
-                * (EvaluatePlayerPieces(playerColor)-EvaluatePlayerPieces(enemy)*0.75);
+            return 0.4*(EvaluatePlayerPosition(playerColor)-EvaluatePlayerPosition(enemy)*0.75) 
+                + 0.6*(EvaluatePlayerPieces(playerColor)-EvaluatePlayerPieces(enemy)*0.75); //I feel like it moves knights too much and pawns not enough ~Paweł
         }
 
         bool ForceDraw(Color color)
@@ -350,7 +350,7 @@ namespace ChessAI
         public Win ExecuteTurn()
 		{
 			Turns++;
-            if(ForceDraw(Color.White))
+            if (ForceDraw(Color.White))
                 return GameState = Win.Stalemate;
             try
 			{
@@ -371,7 +371,7 @@ namespace ChessAI
 			{
 				Turns--;
 				UndoMove(1);
-			}
+            }
 
             if (ForceDraw(Color.Black))
                 return GameState = Win.Stalemate;

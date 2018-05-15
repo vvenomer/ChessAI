@@ -7,25 +7,23 @@ namespace ChessAI
 	{
 		static void Main(string[] args)
 		{
-            /*Player A = new RandomPlayer(Color.White);
+            Player A = new AlphaBeta(Color.White, 4);
             Player B = new RandomPlayer(Color.Black);
             int[] results = new int[3];
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < 20; i++)
             {
                 Board board = new Board(A, B);
-
                 do
                 {
                     board.ExecuteTurn();
-                    //Console.ReadLine();
                 } while (!board.MatchEnded());
-                //board.Print(null);
-                //board.PrintMatchResult();
-                //Console.Read();
-                if ((i + 1) % 10 == 0)
+                if ((i + 1) % 1 == 0)
                 {
                     Console.SetCursorPosition(0,0);
                     Console.WriteLine("Games: " + (i + 1));
+                    Console.WriteLine("Black wins: " + results[0]);
+                    Console.WriteLine("White wins: " + results[1]);
+                    Console.WriteLine("Stalemates: " + results[2]);
                 }
                 switch (board.GameState)
                 {
@@ -42,13 +40,10 @@ namespace ChessAI
             }
             //Console.Clear();
             //board.PrintMatchResult();
-            Console.WriteLine("Black wins: " + results[0]);
-            Console.WriteLine("White wins: " + results[1]);
-            Console.WriteLine("Stalemates: " + results[2]);
-            Console.Read();*/
+            Console.Read();
 
-            Player A = new RandomPlayer(Color.White);
-            Player B = new AlphaBeta(Color.Black);
+            /*Player A = new AlphaBeta(Color.White);
+            Player B = new RandomPlayer(Color.Black);
             Board board = new Board(A, B);
 
             do
@@ -57,10 +52,9 @@ namespace ChessAI
 
                 //Console.SetCursorPosition(0, 0);
                 //Console.WriteLine(board.Turns);
-                board.Print(null);
-                Console.ReadLine();
+                //Console.ReadLine();
             } while (!board.MatchEnded());
-            board.PrintMatchResult();
+            board.PrintMatchResult();*/
             //Console.Read();
 		}
 	}

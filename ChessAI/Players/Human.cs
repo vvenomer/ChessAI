@@ -41,7 +41,7 @@ namespace ChessAI
 		}
 		public override Point[] Decide(Board board)
 		{
-			board.Print(null);
+			board.Print();
 			Console.WriteLine("Tura nr" + board.Turns + " " + (color == Color.White ? "Białych" : "Czarnych"));
 			Point[] playerChoice = new Point[2];
 			Piece onBoard;
