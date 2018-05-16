@@ -7,7 +7,7 @@ using System.Linq;
 using System.IO;
 namespace ChessAI
 {
-	class NeuralNetwork : Player
+    class NeuralNetwork : Player
     {
         public int myDecisions;
         ActivationNetwork network;
@@ -19,10 +19,10 @@ namespace ChessAI
         Player Substitute;
         List<double[]> boardSnapshot;
         List<double[]> moveSnapshot;
-    
+
         public NeuralNetwork(Color color, string path, bool keepLearning, int depth = 4, int times = 5000, double eps = 1e-6) : base(color)
-		{
-            if(File.Exists(path))
+        {
+            if (File.Exists(path))
                 network = (ActivationNetwork)Network.Load(path);
             else
                 network = new ActivationNetwork(new SigmoidFunction(2), 64, 8, 1);
@@ -59,6 +59,8 @@ namespace ChessAI
         public NeuralNetwork Learn(int games = 20)
         {
             Player B = new RandomPlayer(Board.OppositeColor(color));
+
+            Console.WriteLine("Learning " + 0 + "%   ");
             for (int i = 0; i < games;)
             {
                 Clear();
@@ -74,7 +76,7 @@ namespace ChessAI
 
                     if (board.MatchEnded())
                         continue;
-                    
+
                     if (color == Color.Black)
                         boardSnapshot.Add(board.BoardToDouble());
 
@@ -84,12 +86,13 @@ namespace ChessAI
                         moveSnapshot.Add(new double[] { MoveToDouble(board.LatestMoved.from, board.LatestMoved.to) });
 
                 } while (!board.MatchEnded());
-                if(board.GameState== (color==Color.Black ? Win.Black : Win.White))
+                if (board.GameState == (color == Color.Black ? Win.Black : Win.White))
                 {
                     i++;
+                    Console.Clear();
+                    Console.WriteLine("Learning " + (double)i * 100 / games + "%");
                     double[][] boards = boardSnapshot.ToArray();
                     double[][] moves = moveSnapshot.ToArray();
-
                     for (int j = 0; j < times; j++)
                     {
                         double error = teacher.RunEpoch(boards, moves);
@@ -99,12 +102,14 @@ namespace ChessAI
                 }
 
             }
+            Console.Clear();
+            Console.WriteLine("Done Learning");
             network.Save(path);
             return this;
         }
-        
+
         public override Point[] Decide(Board board)
-		{
+        {
             Point[] choice = DoubleToMove(network.Compute(board.BoardToDouble())[0], eps);
             Piece toMove = board.BoardTab[choice[0].x, choice[0].y];
             if (toMove == null || toMove.Color != color || !toMove.GetValidMoves(board, choice[0]).Contains(choice[1]))
@@ -114,8 +119,8 @@ namespace ChessAI
                 moveSnapshot.Add(new double[] { MoveToDouble(choice[0], choice[1]) });
             }
             else myDecisions++;
-			return choice;
-		}
+            return choice;
+        }
 
         public void Fix()
         {
