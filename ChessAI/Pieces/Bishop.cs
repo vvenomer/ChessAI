@@ -6,14 +6,7 @@ namespace ChessAI.Pieces
 {
     class Bishop : Piece
     {
-        // members
-        const int size = 8;
-        const char Letter = 'B';
-        const int MaxValueOfPosition = 10;
-        public override int maxValueAtPosition { get { return MaxValueOfPosition; } }
-
-        const int ValueOfPiece = 330;
-        static int[,] arrayPiecePosition = new int[8,8]{
+        static int[,] arrayPiecePosition = new int[8, 8]{
             {-20,-10,-10,-10,-10,-10,-10,-20 },
             {-10,  0,  0,  0,  0,  0,  0,-10 },
             {-10,  0,  5, 10, 10,  5,  0,-10 },
@@ -24,15 +17,18 @@ namespace ChessAI.Pieces
             {-20,-10,-10,-10,-10,-10,-10,-20 },
         };
 
-        public override int[,] ArrayPiecePosition { get { return arrayPiecePosition; } }
+        const int size = 8;
+        const char letter = 'B';
+        const int maxValueAtPosition = 10;
+        const Figure id = Figure.Bishop;
+        const int valueOfPiece = 330;
+
+        public override int MaxValueAtPosition { get => maxValueAtPosition; }
+        public override int[,] ArrayPiecePosition { get => arrayPiecePosition; }        
+        public override char Letter { get => letter; }
+        public override int ValueOfPiece { get => valueOfPiece; }
+        public override Figure ID { get => id; }
         
-        public override char letter { get { return Letter; } }
-        public override int valueOfPiece { get { return ValueOfPiece; } }
-
-      
-
-
-        // constructors
         public Bishop() { }
         public Bishop(Color color) : base(color) { }
 
@@ -45,7 +41,7 @@ namespace ChessAI.Pieces
             //color!=mycolor -> add, stop
             if (board.BoardTab[x, y] == null)
                 list.Add(new Point(x, y));
-            else if (board.BoardTab[x, y].color == color)
+            else if (board.BoardTab[x, y].Color == Color)
                 return false;
             else
             {

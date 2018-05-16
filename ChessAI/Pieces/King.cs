@@ -5,11 +5,7 @@ using System.Text;
 namespace ChessAI.Pieces
 {
 	class King : Piece
-	{
-		const char Letter = 'K';
-        const int ValueOfPiece = 20000;
-        const int MaxValueOfPosition = 30;
-        public override int maxValueAtPosition { get { return MaxValueOfPosition; } }
+    {
         static int[,] arrayPiecePosition = new int[8, 8]{
             {-30,-40,-40,-50,-50,-40,-40,-30 },
             {-30,-40,-40,-50,-50,-40,-40,-30 },
@@ -21,12 +17,19 @@ namespace ChessAI.Pieces
             {20, 30, 10,  0,  0, 10, 30, 20},
         };
 
-        public override int[,] ArrayPiecePosition { get { return arrayPiecePosition; } }
-        
+        const char letter = 'K';
+        const int valueOfPiece = 20000;
+        const int maxValueAtPosition = 30;
+        const Figure id = Figure.King;
+
+        public override int MaxValueAtPosition { get => maxValueAtPosition; }
+        public override int[,] ArrayPiecePosition { get => arrayPiecePosition; }
+		public override char Letter { get => letter; }
+        public override int ValueOfPiece { get => valueOfPiece; }
+        public override Figure ID { get => id; }
+
         public King(Color color) : base(color) { }
-		public King() : base() { }
-		public override char letter { get { return Letter; } }
-        public override int valueOfPiece { get { return ValueOfPiece; } }
+        public King() : base() { }
 
         public override List<Point> GetMoves(Board board, Point myPos)
 		{
@@ -39,15 +42,15 @@ namespace ChessAI.Pieces
 			{
 				for (int y = yMin; y <= yMax; y++)
 				{
-					if (board.BoardTab[x, y] == null || board.BoardTab[x,y].color!=color)
+					if (board.BoardTab[x, y] == null || board.BoardTab[x,y].Color!=Color)
 					{
 						list.Add(new Point(x, y));
 					}
 				}
 			}
-			if (moves == 0) //king hasn't moved
+			if (Moves == 0) //king hasn't moved
 			{
-				if (board.BoardTab[0, myPos.y] != null && board.BoardTab[0, myPos.y].moves == 0) //there is rook on the left, that hasn't moved
+				if (board.BoardTab[0, myPos.y] != null && board.BoardTab[0, myPos.y].Moves == 0) //there is rook on the left, that hasn't moved
 				{
 					bool isEmpty = true;
 					for (int i = 1; i < myPos.x; i++) //all spots on the way are empty
@@ -61,7 +64,7 @@ namespace ChessAI.Pieces
 					if (isEmpty)
 						list.Add(new Point(myPos.x - 2, myPos.y));
 				}
-				if (board.BoardTab[7, myPos.y] != null && board.BoardTab[7, myPos.y].moves == 0)
+				if (board.BoardTab[7, myPos.y] != null && board.BoardTab[7, myPos.y].Moves == 0)
 				{
 					bool isEmpty = true;
 					for (int i = myPos.x + 1; i < 7; i++) //all spots on the way are empty

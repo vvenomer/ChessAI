@@ -7,24 +7,24 @@ namespace ChessAI
 	{
 		static void Main(string[] args)
 		{
-            Player A = new AlphaBeta(Color.White, 4);
-            Player B = new RandomPlayer(Color.Black);
+
+
+            //NeuralNetwork A = new NeuralNetwork(Color.White, @"activationNN.dat", true).Learn();
+            Player A = new MinMax(Color.White, 3);
+            Player B = new AlphaBeta(Color.Black, 3);
             int[] results = new int[3];
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 10; i++)
             {
                 Board board = new Board(A, B);
                 do
                 {
                     board.ExecuteTurn();
+                    //board.Print();
                 } while (!board.MatchEnded());
-                if ((i + 1) % 1 == 0)
-                {
-                    Console.SetCursorPosition(0,0);
-                    Console.WriteLine("Games: " + (i + 1));
-                    Console.WriteLine("Black wins: " + results[0]);
-                    Console.WriteLine("White wins: " + results[1]);
-                    Console.WriteLine("Stalemates: " + results[2]);
-                }
+                /*if (board.GameState == Win.White)
+                    A.Fix();
+                else
+                    A.Clear();*/
                 switch (board.GameState)
                 {
                     case Win.Black:
@@ -36,6 +36,15 @@ namespace ChessAI
                     case Win.Stalemate:
                         results[2]++;
                         break;
+                }
+                if ((i + 1) % 1 == 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Games: " + (i + 1));
+                    Console.WriteLine("Black wins: " + results[0]);
+                    Console.WriteLine("White wins: " + results[1]);
+                    Console.WriteLine("Stalemates: " + results[2]);
+                    //Console.WriteLine("myDecisions: " + A.myDecisions);
                 }
             }
             //Console.Clear();

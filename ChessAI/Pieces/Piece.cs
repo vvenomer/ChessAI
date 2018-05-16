@@ -4,23 +4,24 @@ namespace ChessAI
 {
 	abstract class Piece
 	{
-		public int moves { get; set; }
-		public Color color { get; set; }
+		public int Moves { get; set; }
+		public Color Color { get; set; }
 
-        public abstract int valueOfPiece { get;}
+        public abstract int ValueOfPiece { get;}
         public abstract int[,] ArrayPiecePosition { get; }
-        public abstract int maxValueAtPosition { get; }
+        public abstract int MaxValueAtPosition { get; }
+        public abstract Figure ID { get; }
 
-        public abstract char letter { get; }
+        public abstract char Letter { get; }
 
 		public Piece(Color color)
 		{
-			moves = 0;
-			this.color = color;
+			Moves = 0;
+			this.Color = color;
 		}
 		public Piece()
 		{
-			moves = 0;
+			Moves = 0;
 		}
 
 		public List<Point> GetValidMoves(Board board, Point myPos)
@@ -36,7 +37,7 @@ namespace ChessAI
                 board.Execute(mov, true); //but don't check for check
 
                 promoted = board.LatestMoved.hasPromoted;
-				bool check = board.PiecesCheckingKing(color, true).Count != 0;
+				bool check = board.PiecesCheckingKing(Color, true).Count != 0;
                 Board.Move move = board.LatestMoved;
                 board.UndoMove(1);
                 if (!check && promoted)
@@ -45,7 +46,7 @@ namespace ChessAI
                     {
                         board.Execute(mov, true, j); //but don't check for check
                         promoted = board.LatestMoved.hasPromoted;
-                        check = board.PiecesCheckingKing(color, true).Count != 0;
+                        check = board.PiecesCheckingKing(Color, true).Count != 0;
 
                         board.UndoMove(1);
                         if (check) break;

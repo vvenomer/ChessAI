@@ -52,7 +52,7 @@ namespace ChessAI
 				playerChoice[0] = GetPiece("Wybierz bierkę", board.CanDraw);
 
 				onBoard = board.BoardTab[playerChoice[0].x, playerChoice[0].y];
-				if (onBoard == null || onBoard.color != color)
+				if (onBoard == null || onBoard.Color != color)
 				{
 					//not your piece
 					Console.WriteLine("To nie jest twoja bierka");

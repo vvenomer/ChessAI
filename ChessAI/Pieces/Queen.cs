@@ -5,13 +5,7 @@ using System.Text;
 namespace ChessAI.Pieces
 {
 	class Queen : Piece
-	{
-		const char Letter = 'Q';
-
-        const int ValueOfPiece = 900;
-        const int MaxValueOfPosition = 5;
-        public override int maxValueAtPosition { get { return MaxValueOfPosition; } }
-
+    {
         static int[,] arrayPiecePosition = new int[8, 8]{
            { -20,-10,-10, -5, -5,-10,-10,-20 },
            { -10,  0,  0,  0,  0,  0,  0,-10},
@@ -23,14 +17,21 @@ namespace ChessAI.Pieces
            { -20,-10,-10, -5, -5,-10,-10,-20},
         };
 
-        public override int[,] ArrayPiecePosition { get { return arrayPiecePosition; } }
-        
+        const char letter = 'Q';
+        const int valueOfPiece = 900;
+        const int maxValueAtPosition = 5;
+        const Figure id = Figure.Queen;
+
+        public override int MaxValueAtPosition { get => maxValueAtPosition; }
+        public override int[,] ArrayPiecePosition { get => arrayPiecePosition; }
+		public override char Letter { get => letter; }
+        public override int ValueOfPiece { get => valueOfPiece; }
+        public override Figure ID { get => id; }
+
+
         public Queen() { }
+        public Queen(Color color) : base(color) { }
 
-		public Queen(Color color) : base(color) { }
-
-		public override char letter { get { return Letter; } }
-        public override int valueOfPiece { get { return ValueOfPiece; } }
         private bool AddToList(List<Point> list, Board board, int x, int y)
 		{
 
@@ -39,7 +40,7 @@ namespace ChessAI.Pieces
 			//color!=mycolor -> add, stop
 			if (board.BoardTab[x, y] == null)
 				list.Add(new Point(x, y));
-			else if (board.BoardTab[x, y].color == color)
+			else if (board.BoardTab[x, y].Color == Color)
 				return false;
 			else
 			{

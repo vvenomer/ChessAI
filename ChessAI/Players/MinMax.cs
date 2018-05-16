@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ChessAI
 {
-    class AlphaBeta : Player
+    class MinMax : Player
     {
         struct Node
         {
@@ -13,12 +13,12 @@ namespace ChessAI
         }
         int depth;
 
-        public AlphaBeta(Color color, int searchDepth = 4) : base(color)
+        public MinMax(Color color, int searchDepth = 4) : base(color)
         {
             depth = searchDepth;
         }
 
-        private Node DoAlphaBeta(bool isMin, Board board, int depth, double alpha = 0, double beta = 1)
+        private Node DoMinMax(bool isMin, Board board, int depth)
         {
             Node MinMax = new Node()
             {
@@ -37,9 +37,9 @@ namespace ChessAI
                     Point[] tempMove = new Point[2] { piecePos, move };
 
                     board.Execute(tempMove);
-                    
-                    Node result = DoAlphaBeta(!isMin, board, depth - 1, alpha, beta);
-                    
+
+                    Node result = DoMinMax(!isMin, board, depth - 1);
+
                     board.UndoMove(1);
 
                     if ((isMin && result.eval <= MinMax.eval) || (!isMin && result.eval >= MinMax.eval))
@@ -47,12 +47,6 @@ namespace ChessAI
                         MinMax.eval = result.eval;
                         MinMax.move = tempMove;
                     }
-                    if (isMin)
-                        beta = Math.Min(result.eval, beta);
-                    else
-                        alpha = Math.Max(result.eval, alpha);
-                    if (beta <= alpha)
-                        return MinMax;
                 }
             }
             return MinMax;
@@ -61,8 +55,8 @@ namespace ChessAI
 
         public override Point[] Decide(Board board)
         {
-            Node alfaBeta = DoAlphaBeta(false, board, depth);
-            return alfaBeta.move;
+            Node minMax = DoMinMax(false, board, depth);
+            return minMax.move;
         }
 
         public override char PromotePawn(char[] options)

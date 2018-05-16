@@ -6,12 +6,6 @@ namespace ChessAI.Pieces
 {
     class Pawn : Piece
     {
-        const char Letter = 'P';
-
-        const int ValueOfPiece = 100;
-        const int MaxValueOfPosition = 30;
-        public override int maxValueAtPosition { get { return MaxValueOfPosition; } }
-
         static int[,] arrayPiecePosition = new int[8, 8]{
            { 0,  0,  0,  0,  0,  0,  0,  0 },
            { 50, 50, 50, 50, 50, 50, 50, 50},
@@ -23,18 +17,26 @@ namespace ChessAI.Pieces
            { 0,  0,  0,  0,  0,  0,  0,  0 },
         };
 
-        public override int[,] ArrayPiecePosition { get { return arrayPiecePosition; } }
+        const char letter = 'P';
+        const int valueOfPiece = 100;
+        const int maxValueAtPosition = 30;
+        const Figure id = Figure.Pawn;
+
+        public override int MaxValueAtPosition { get => maxValueAtPosition; }
+        public override int[,] ArrayPiecePosition { get => arrayPiecePosition; }
+        public override char Letter { get => letter; }
+        public override int ValueOfPiece { get => valueOfPiece; }
+        public override Figure ID { get => id; }
 
         public Pawn(Color color) : base(color) { }
         public Pawn() : base() { }
-        public override char letter { get { return Letter; } }
-        public override int valueOfPiece { get { return ValueOfPiece; } }
+        
         public override List<Point> GetMoves(Board board, Point myPos)
         {
             List<Point> list = new List<Point>();
-            int way = color == Color.White ? 1 : -1;
+            int way = Color == Color.White ? 1 : -1;
             //move 2 file on the first move (double step move)
-            if (moves == 0 && board.BoardTab[myPos.x, myPos.y + way * 2] == null && board.BoardTab[myPos.x, myPos.y + way] == null) //err white?
+            if (Moves == 0 && board.BoardTab[myPos.x, myPos.y + way * 2] == null && board.BoardTab[myPos.x, myPos.y + way] == null) //err white?
                 list.Add(new Point(myPos.x, myPos.y + way * 2));
             //move 1 file forward
             if ((way > 0 && myPos.y < 7) || (way < 0 && myPos.y > 0))
@@ -44,14 +46,14 @@ namespace ChessAI.Pieces
             if (myPos.x > 0)
             {
                 Piece diagLeft = board.BoardTab[myPos.x - 1, myPos.y + way]; //err black?
-                if (diagLeft != null && diagLeft.color != color)
+                if (diagLeft != null && diagLeft.Color != Color)
                     list.Add(new Point(myPos.x - 1, myPos.y + way));
             }
             //hit enemy on diagonal right
             if (myPos.x < 7)
             {
                 Piece diagRight = board.BoardTab[myPos.x + 1, myPos.y + way];
-                if (diagRight != null && diagRight.color != color)
+                if (diagRight != null && diagRight.Color != Color)
                     list.Add(new Point(myPos.x + 1, myPos.y + way));
             }
             //en passant
@@ -59,9 +61,9 @@ namespace ChessAI.Pieces
                 return list;
             Piece latestMoved = board.BoardTab[board.LatestMoved.to.x, board.LatestMoved.to.y];
 
-            if (latestMoved.letter == 'P' && //pawn
-                latestMoved.color != color && //enemy
-                latestMoved.moves == 1 && //moved once
+            if (latestMoved.Letter == 'P' && //pawn
+                latestMoved.Color != Color && //enemy
+                latestMoved.Moves == 1 && //moved once
                 (board.LatestMoved.to.y == 3 || board.LatestMoved.to.y == 4)) //it was double step move
             {
                 if (myPos.x > 0 && myPos.x - 1 == board.LatestMoved.to.x && myPos.y == board.LatestMoved.to.y) //this pawn is next to it
@@ -81,19 +83,19 @@ namespace ChessAI.Pieces
             switch (choice)
             {
                 case 'Q':
-                    newPiece = new Queen(color);
+                    newPiece = new Queen(Color);
                     break;
                 case 'N':
-                    newPiece = new Knight(color);
+                    newPiece = new Knight(Color);
                     break;
                 case 'R':
-                    newPiece = new Rook(color);
+                    newPiece = new Rook(Color);
                     break;
                 case 'B':
-                    newPiece = new Bishop(color);
+                    newPiece = new Bishop(Color);
                     break;
             }
-            newPiece.moves = moves;
+            newPiece.Moves = Moves;
             return newPiece;
         }
     }

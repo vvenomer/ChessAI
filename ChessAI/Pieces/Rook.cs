@@ -6,13 +6,6 @@ namespace ChessAI.Pieces
 {
 	class Rook : Piece
 	{
-		const char Letter = 'R';
-
-        const int ValueOfPiece = 500;
-
-        const int MaxValueOfPosition = 10;
-        public override int maxValueAtPosition { get { return MaxValueOfPosition; } }
-
         static int[,] arrayPiecePosition = new int[8, 8]{
             { 0,  0,  0,  0,  0,  0,  0,  0 },
             {5,10, 10, 10, 10, 10, 10,  5 },
@@ -23,14 +16,21 @@ namespace ChessAI.Pieces
             {-5, 0,  0,  0,  0,  0,  0, -5 },
             {0, 0,  0,  5,  5,  0,  0,  0 },
         };
-        
-        public override int[,] ArrayPiecePosition { get { return arrayPiecePosition; } }
-        public Rook() : base() { }
 
+        const char letter = 'R';
+        const int valueOfPiece = 500;
+        const int maxValueAtPosition = 10;
+        const Figure id = Figure.Rook;
+
+        public override int MaxValueAtPosition { get => maxValueAtPosition; }
+        public override int[,] ArrayPiecePosition { get => arrayPiecePosition; }
+        public override char Letter { get => letter; }
+        public override int ValueOfPiece { get => valueOfPiece; }
+        public override Figure ID { get => id; }
+
+        public Rook() : base() { }
 		public Rook(Color color) : base(color) { }
 
-		public override char letter { get { return Letter; } }
-        public override int valueOfPiece { get { return ValueOfPiece; } }
         private bool AddToList(List<Point> list, Board board, int x, int y)
 		{
 
@@ -39,7 +39,7 @@ namespace ChessAI.Pieces
 			//color!=mycolor -> add, stop
 			if (board.BoardTab[x, y] == null)
 				list.Add(new Point(x, y));
-			else if (board.BoardTab[x, y].color == color)
+			else if (board.BoardTab[x, y].Color == Color)
 				return false;
 			else
 			{

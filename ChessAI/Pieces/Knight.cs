@@ -6,11 +6,6 @@ namespace ChessAI.Pieces
 {
     class Knight : Piece
     {
-        const char Letter = 'N';
-
-        const int ValueOfPiece = 320;
-        const int MaxValueOfPosition = 20;
-        public override int maxValueAtPosition { get { return MaxValueOfPosition; } }
         static int[,] arrayPiecePosition = new int[8, 8]{
            { -50,-40,-30,-30,-30,-30,-40,-50 },
            { -40,-20,  0,  0,  0,  0,-20,-40 },
@@ -22,14 +17,20 @@ namespace ChessAI.Pieces
            { -50,-40,-30,-30,-30,-30,-40,-50 },
         };
 
-        public override int[,] ArrayPiecePosition { get { return arrayPiecePosition; } }
-        
-        public Knight() { }
+        const char letter = 'N';
+        const int valueOfPiece = 320;
+        const int maxValueAtPosition = 20;
+        const Figure id = Figure.Knight;
 
+        public override int MaxValueAtPosition { get => maxValueAtPosition; }
+        public override int[,] ArrayPiecePosition { get => arrayPiecePosition; }
+        public override char Letter { get => letter; }
+        public override int ValueOfPiece { get => valueOfPiece; }
+        public override Figure ID { get => id; }
+
+        public Knight() { }
         public Knight(Color color) : base(color) { }
 
-        public override char letter { get { return Letter; } }
-        public override int valueOfPiece { get { return ValueOfPiece; } }
         public override List<Point> GetMoves(Board board, Point myPos)
         {
             List<Point> list = new List<Point>();
@@ -44,7 +45,7 @@ namespace ChessAI.Pieces
                 //end magic
                 if (myPos.x + x < 8 && myPos.x + x >= 0
                         && myPos.y + y < 8 && myPos.y + y >= 0
-                        && (board.BoardTab[myPos.x + x, myPos.y + y] == null || board.BoardTab[myPos.x + x, myPos.y + y].color != color))
+                        && (board.BoardTab[myPos.x + x, myPos.y + y] == null || board.BoardTab[myPos.x + x, myPos.y + y].Color != Color))
                     list.Add(new Point(myPos.x + x, myPos.y + y));
             }
             return list;
